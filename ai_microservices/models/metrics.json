@@ -1,0 +1,24 @@
+{
+  "improvement": {
+    "improved": false,
+    "mae_pct": 0.0,
+    "rmse_pct": 0.0
+  },
+  "meta": {
+    "features": 22,
+    "model": "XGBRegressor",
+    "test_rows": 291,
+    "timestamp": "2025-12-12T19:31:02.665212",
+    "train_rows": 1164
+  },
+  "test": {
+    "mae": 221.43423975783983,
+    "mape": 0.026616906067188636,
+    "rmse": 311.2721628011235
+  },
+  "train": {
+    "mae": 58.37824346273628,
+    "mape": 0.007184712363674364,
+    "rmse": 120.32643864825755
+  }
+}

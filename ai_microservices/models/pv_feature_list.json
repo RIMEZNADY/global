@@ -1,0 +1,1 @@
+["hour", "dayofweek", "month", "is_weekend", "is_night", "temperature_C", "irradiance_kWh_m2", "lag_6h", "lag_12h", "lag_24h", "roll_mean_24h", "roll_std_24h"]

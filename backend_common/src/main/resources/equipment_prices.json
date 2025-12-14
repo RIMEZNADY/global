@@ -1,0 +1,235 @@
+{
+  "solar_panels": [
+    {
+      "id": "panel1",
+      "name": "Panneau Solaire Monocristallin 400W",
+      "price_dh": 850,
+      "efficiency": 21.5,
+      "power_w": 400,
+      "type": "MONOCRYSTALLINE",
+      "manufacturer": "Generic",
+      "warranty_years": 25,
+      "price_per_watt": 2.13
+    },
+    {
+      "id": "panel2",
+      "name": "Panneau Solaire Polycristallin 380W",
+      "price_dh": 720,
+      "efficiency": 19.2,
+      "power_w": 380,
+      "type": "POLYCRYSTALLINE",
+      "manufacturer": "Generic",
+      "warranty_years": 25,
+      "price_per_watt": 1.89
+    },
+    {
+      "id": "panel3",
+      "name": "Panneau Solaire Bifacial 450W",
+      "price_dh": 1100,
+      "efficiency": 22.8,
+      "power_w": 450,
+      "type": "BIFACIAL",
+      "manufacturer": "Generic",
+      "warranty_years": 30,
+      "price_per_watt": 2.44
+    },
+    {
+      "id": "panel4",
+      "name": "Panneau Solaire PERC 410W",
+      "price_dh": 950,
+      "efficiency": 21.8,
+      "power_w": 410,
+      "type": "PERC",
+      "manufacturer": "Generic",
+      "warranty_years": 25,
+      "price_per_watt": 2.32
+    }
+  ],
+  "batteries": [
+    {
+      "id": "battery1",
+      "name": "Batterie Lithium-ion 10kWh",
+      "price_dh": 45000,
+      "capacity_kwh": 10,
+      "type": "LITHIUM_ION",
+      "cycles": 6000,
+      "depth_of_discharge": 90,
+      "warranty_years": 10,
+      "price_per_kwh": 4500
+    },
+    {
+      "id": "battery2",
+      "name": "Batterie Lithium-ion 15kWh",
+      "price_dh": 65000,
+      "capacity_kwh": 15,
+      "type": "LITHIUM_ION",
+      "cycles": 6000,
+      "depth_of_discharge": 90,
+      "warranty_years": 10,
+      "price_per_kwh": 4333
+    },
+    {
+      "id": "battery3",
+      "name": "Batterie Lithium Fer Phosphate 12kWh",
+      "price_dh": 52000,
+      "capacity_kwh": 12,
+      "type": "LFP",
+      "cycles": 8000,
+      "depth_of_discharge": 95,
+      "warranty_years": 15,
+      "price_per_kwh": 4333
+    },
+    {
+      "id": "battery4",
+      "name": "Batterie AGM 20kWh",
+      "price_dh": 38000,
+      "capacity_kwh": 20,
+      "type": "AGM",
+      "cycles": 1500,
+      "depth_of_discharge": 50,
+      "warranty_years": 5,
+      "price_per_kwh": 1900
+    }
+  ],
+  "inverters": [
+    {
+      "id": "inv1",
+      "name": "Onduleur Hybride 5kW",
+      "price_dh": 12000,
+      "power_kw": 5,
+      "type": "HYBRID",
+      "efficiency": 96,
+      "warranty_years": 5,
+      "price_per_kw": 2400
+    },
+    {
+      "id": "inv2",
+      "name": "Onduleur Hybride 10kW",
+      "price_dh": 22000,
+      "power_kw": 10,
+      "type": "HYBRID",
+      "efficiency": 96,
+      "warranty_years": 5,
+      "price_per_kw": 2200
+    },
+    {
+      "id": "inv3",
+      "name": "Onduleur Grid-Tie 8kW",
+      "price_dh": 15000,
+      "power_kw": 8,
+      "type": "GRID_TIE",
+      "efficiency": 98,
+      "warranty_years": 5,
+      "price_per_kw": 1875
+    },
+    {
+      "id": "inv4",
+      "name": "Onduleur Hybride 15kW",
+      "price_dh": 32000,
+      "power_kw": 15,
+      "type": "HYBRID",
+      "efficiency": 96,
+      "warranty_years": 5,
+      "price_per_kw": 2133
+    }
+  ],
+  "controllers": [
+    {
+      "id": "ctrl1",
+      "name": "Régulateur MPPT 60A",
+      "price_dh": 3500,
+      "current_a": 60,
+      "type": "MPPT",
+      "efficiency": 98,
+      "warranty_years": 3,
+      "price_per_amp": 58.33
+    },
+    {
+      "id": "ctrl2",
+      "name": "Régulateur MPPT 80A",
+      "price_dh": 4800,
+      "current_a": 80,
+      "type": "MPPT",
+      "efficiency": 98,
+      "warranty_years": 3,
+      "price_per_amp": 60
+    },
+    {
+      "id": "ctrl3",
+      "name": "Régulateur MPPT 100A",
+      "price_dh": 6200,
+      "current_a": 100,
+      "type": "MPPT",
+      "efficiency": 98,
+      "warranty_years": 3,
+      "price_per_amp": 62
+    },
+    {
+      "id": "ctrl4",
+      "name": "Régulateur PWM 50A",
+      "price_dh": 1800,
+      "current_a": 50,
+      "type": "PWM",
+      "efficiency": 85,
+      "warranty_years": 2,
+      "price_per_amp": 36
+    }
+  ],
+  "market_info": {
+    "last_updated": "2024-12-12",
+    "currency": "MAD",
+    "source": "Market estimates based on Moroccan solar equipment prices",
+    "notes": "Prices are estimates for generic equipment. Real prices may vary based on brand, supplier, and market conditions. Prices include basic installation but may not include all accessories or professional installation fees."
+  },
+  "price_ranges": {
+    "solar_panels_per_watt": {
+      "min": 1.8,
+      "max": 2.5,
+      "average": 2.1,
+      "unit": "DH/W"
+    },
+    "batteries_per_kwh": {
+      "lithium_ion": {
+        "min": 4000,
+        "max": 5000,
+        "average": 4500
+      },
+      "lfp": {
+        "min": 4000,
+        "max": 5000,
+        "average": 4500
+      },
+      "agm": {
+        "min": 1500,
+        "max": 2500,
+        "average": 2000
+      },
+      "unit": "DH/kWh"
+    },
+    "inverters_per_kw": {
+      "hybrid": {
+        "min": 2000,
+        "max": 2500,
+        "average": 2200
+      },
+      "grid_tie": {
+        "min": 1500,
+        "max": 2000,
+        "average": 1750
+      },
+      "unit": "DH/kW"
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
