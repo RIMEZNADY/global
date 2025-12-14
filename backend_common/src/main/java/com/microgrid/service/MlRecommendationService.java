@@ -22,6 +22,9 @@ public class MlRecommendationService {
 
     @Autowired
     private SizingService sizingService;
+    
+    @Autowired
+    private ComprehensiveResultsService comprehensiveResultsService;
 
     private final RestTemplate restTemplate;
 
@@ -131,8 +134,8 @@ public class MlRecommendationService {
         
         // Calculer ROI avec formule déterministe (pas ML)
         double annualSavings = sizingService.calculateAnnualSavings(monthlyConsumption, autonomy, 1.2);
-        // Estimation coût installation (formule simple)
-        double installationCost = (recommendedPvPower * 2500) + (recommendedBattery * 4000) + (recommendedPvPower * 2000) * 1.2;
+        // Utiliser le service standardisé pour le coût d'installation
+        double installationCost = comprehensiveResultsService.estimateInstallationCost(recommendedPvPower, recommendedBattery);
         double roiYears = sizingService.calculateROI(installationCost, annualSavings);
         
         MlRecommendationResult result = getMlRecommendations(

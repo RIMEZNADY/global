@@ -3,6 +3,7 @@ package com.microgrid.service;
 import com.microgrid.model.Establishment;
 import com.microgrid.model.MoroccanCity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -25,6 +26,7 @@ public class ComprehensiveResultsService {
     private MeteoDataService meteoDataService;
     
     @Autowired
+    @Lazy
     private MlRecommendationService mlRecommendationService;
 
     // Constantes
@@ -72,15 +74,30 @@ public class ComprehensiveResultsService {
             double co2Avoided) {
         
         // Scores par catégorie (max 25 points chacun)
-        double autonomyScore = (autonomyPercentage / 100.0) * 25.0;
-        double economicScore = annualSavings > 0 ? 25.0 : 0.0;
-        double resilienceScore = calculateResilienceScore(batteryCapacity, autonomyPercentage);
-        double environmentalScore = Math.min((co2Avoided / 10.0) * 25.0, 25.0);
+        // Les scores peuvent varier naturellement selon les calculs
         
+        // Score autonomie (0-25) : linéaire basé sur le pourcentage
+        double autonomyScore = Math.min(Math.max((autonomyPercentage / 100.0) * 25.0, 0.0), 25.0);
+        
+        // Score économique (0-25) : basé sur les économies annuelles normalisées
+        // Normaliser sur une plage raisonnable (0-1M DH/an = 25 points)
+        double normalizedSavings = Math.min(Math.max(annualSavings / 1000000.0, 0.0), 1.0);
+        double economicScore = normalizedSavings * 25.0;
+        
+        // Score résilience (0-25) : basé sur capacité batterie et autonomie
+        double resilienceScore = calculateResilienceScore(batteryCapacity, autonomyPercentage);
+        
+        // Score environnemental (0-25) : basé sur CO2 évité
+        // Normaliser sur 10 tonnes/an = 25 points
+        double normalizedCO2 = Math.min(Math.max(co2Avoided / 10.0, 0.0), 1.0);
+        double environmentalScore = normalizedCO2 * 25.0;
+        
+        // Score global (peut varier naturellement)
         double globalScore = autonomyScore + economicScore + resilienceScore + environmentalScore;
         
         Map<String, Object> result = new HashMap<>();
-        result.put("globalScore", globalScore);
+        result.put("score", globalScore); // Clé "score" pour cohérence avec le frontend
+        result.put("globalScore", globalScore); // Garder pour compatibilité
         result.put("autonomyScore", autonomyScore);
         result.put("economicScore", economicScore);
         result.put("resilienceScore", resilienceScore);
@@ -95,7 +112,7 @@ public class ComprehensiveResultsService {
     private double calculateResilienceScore(double batteryCapacity, double autonomy) {
         // Score basé sur capacité batterie et autonomie
         double batteryScore = Math.min((batteryCapacity / 1000.0) * 15.0, 15.0); // Max 15 points
-        double autonomyScore = (autonomy / 100.0) * 10.0; // Max 10 points
+        double autonomyScore = Math.min((autonomy / 100.0) * 10.0, 10.0); // Max 10 points
         return batteryScore + autonomyScore;
     }
 
@@ -240,17 +257,75 @@ public class ComprehensiveResultsService {
         return result;
     }
 
+    // Constantes pour le calcul de coût d'installation (marché marocain 2024)
+    private static final double PV_COST_PER_KW = 2500.0;           // Panneaux solaires
+    private static final double BATTERY_COST_PER_KWH = 4500.0;     // Batteries
+    private static final double INVERTER_COST_PER_KW = 2000.0;     // Onduleur
+    private static final double INSTALLATION_PERCENTAGE = 0.20;    // 20% installation
+
     /**
-     * Estime le coût d'installation
+     * Estime le coût d'installation standardisé
+     * Formule unique utilisée dans toute l'application pour garantir la cohérence
+     * Utilise les prix réels des équipements sélectionnés si disponibles, sinon prix moyens
+     * 
+     * @param pvPower Puissance PV en kWc
+     * @param batteryCapacity Capacité batterie en kWh
+     * @param establishment Établissement (optionnel, pour récupérer les prix réels des équipements)
+     * @return Coût total d'installation en DH
+     */
+    public double estimateInstallationCost(double pvPower, double batteryCapacity, Establishment establishment) {
+        double pvCost;
+        double batteryCost;
+        double inverterCost;
+        double controllerCost = 0.0;
+        
+        // Utiliser les prix réels des équipements sélectionnés si disponibles
+        if (establishment != null && establishment.getSelectedPanelPrice() != null 
+            && establishment.getSelectedBatteryPrice() != null 
+            && establishment.getSelectedInverterPrice() != null) {
+            
+            // Calculer le coût total des équipements sélectionnés
+            // Pour les panneaux : prix unitaire * nombre de panneaux nécessaires
+            // Estimation : 1 panneau = 0.4 kWc (400W), donc nombre = pvPower / 0.4
+            // Le prix dans la liste est pour 1 panneau de 400W
+            double panelPowerKw = 0.4; // 400W = 0.4 kWc par panneau
+            double panelsNeeded = Math.ceil(pvPower / panelPowerKw); // Arrondir vers le haut
+            pvCost = establishment.getSelectedPanelPrice() * panelsNeeded;
+            
+            // Pour la batterie : prix unitaire pour une batterie de capacité donnée
+            // Les batteries dans la liste sont de 10kWh, 12kWh, 15kWh, 20kWh
+            // On calcule le nombre de batteries nécessaires
+            double batteryUnitCapacity = 10.0; // Capacité unitaire moyenne (kWh)
+            double batteriesNeeded = Math.ceil(batteryCapacity / batteryUnitCapacity);
+            batteryCost = establishment.getSelectedBatteryPrice() * batteriesNeeded;
+            
+            // Pour l'onduleur : prix unitaire (déjà dimensionné pour la puissance)
+            // Les onduleurs dans la liste sont de 5kW, 8kW, 10kW, 15kW
+            // On utilise le prix de l'onduleur sélectionné (supposé adapté à la puissance)
+            inverterCost = establishment.getSelectedInverterPrice();
+            
+            // Pour le régulateur : prix unitaire
+            if (establishment.getSelectedControllerPrice() != null) {
+                controllerCost = establishment.getSelectedControllerPrice();
+            }
+        } else {
+            // Fallback sur prix moyens
+            pvCost = pvPower * PV_COST_PER_KW;
+            batteryCost = batteryCapacity * BATTERY_COST_PER_KWH;
+            inverterCost = pvPower * INVERTER_COST_PER_KW;
+        }
+        
+        double equipmentCost = pvCost + batteryCost + inverterCost + controllerCost;
+        double installationCost = equipmentCost * INSTALLATION_PERCENTAGE;
+        
+        return equipmentCost + installationCost;
+    }
+    
+    /**
+     * Surcharge pour compatibilité (utilise prix moyens)
      */
     public double estimateInstallationCost(double pvPower, double batteryCapacity) {
-        // Coûts moyens marché marocain (2024)
-        double pvCost = pvPower * 2500; // 2500 DH/kW
-        double batteryCost = batteryCapacity * 4000; // 4000 DH/kWh
-        double inverterCost = pvPower * 2000; // 2000 DH/kW
-        double installationCost = (pvCost + batteryCost + inverterCost) * 0.2; // 20% installation
-        
-        return pvCost + batteryCost + inverterCost + installationCost;
+        return estimateInstallationCost(pvPower, batteryCapacity, null);
     }
 
     /**
@@ -274,6 +349,7 @@ public class ComprehensiveResultsService {
         
         // 🤖 AMÉLIORATION AVEC IA/ML
         // Utiliser le service ML pour affiner les recommandations basées sur des données historiques
+        // Les valeurs ML peuvent varier, ce qui permet au score de varier naturellement
         try {
             Map<String, Object> mlResult = mlRecommendationService.getMlRecommendations(establishment);
             
@@ -306,10 +382,6 @@ public class ComprehensiveResultsService {
                     }
                 }
             }
-            
-            // Note: ROI calculé avec formule déterministe (SizingService.calculateROI), pas avec ML
-            // Les recommandations ML sont utilisées uniquement pour optimisations et alertes,
-            // pas pour ajuster le dimensionnement basique (qui suit les lois physiques)
         } catch (Exception e) {
             // Si le service ML échoue, utiliser les valeurs de base (calculs physiques)
             System.err.println("⚠️ Service ML indisponible, utilisation des calculs basiques: " + e.getMessage());
@@ -329,12 +401,19 @@ public class ComprehensiveResultsService {
         
         // Économies annuelles (gain réel par rapport à la situation actuelle)
         double currentAutonomy = 0.0;
+        double existingPvCost = 0.0;
         if (establishment.getExistingPvInstalled() != null && establishment.getExistingPvInstalled()) {
             Double existingPvPower = establishment.getExistingPvPowerKwc();
             if (existingPvPower != null && existingPvPower > 0) {
                 double existingPvSurface = existingPvPower * 5.0;
                 currentAutonomy = sizingService.calculateEnergyAutonomy(
                     existingPvSurface, monthlyConsumption, irradiationClass);
+                
+                // Calculer le coût du PV existant (valeur résiduelle)
+                // Estimation : coût initial du PV existant (amorti, on utilise 50% de la valeur initiale)
+                // Coût PV uniquement (sans batterie ni onduleur pour le calcul de valeur résiduelle)
+                double existingPvCostInitial = existingPvPower * PV_COST_PER_KW;
+                existingPvCost = existingPvCostInitial * 0.5; // 50% valeur résiduelle (amortissement)
             }
         }
         // Économies = économies totales avec nouveau microgrid - économies actuelles (si PV existant)
@@ -342,8 +421,11 @@ public class ComprehensiveResultsService {
         double currentSavings = sizingService.calculateAnnualSavings(monthlyConsumption, currentAutonomy, 1.2);
         double annualSavings = totalSavingsWithNewMicrogrid - currentSavings; // Gain réel
         
-        // Coût installation
-        double installationCost = estimateInstallationCost(recommendedPvPower, recommendedBattery);
+        // Coût installation (utilise les prix réels des équipements si disponibles)
+        double installationCost = estimateInstallationCost(recommendedPvPower, recommendedBattery, establishment);
+        
+        // Coût NET d'installation (nouveau microgrid - valeur résiduelle existant)
+        double netInstallationCost = installationCost - existingPvCost;
         
         // Impact environnemental
         Map<String, Object> environmental = calculateEnvironmentalImpact(establishment, autonomy);
@@ -353,8 +435,17 @@ public class ComprehensiveResultsService {
         Map<String, Object> globalScore = calculateGlobalScore(
             establishment, autonomy, annualSavings, recommendedBattery, co2Avoided);
         
-        // Analyse financière
-        Map<String, Object> financial = calculateFinancialAnalysis(installationCost, annualSavings, 20);
+        // Analyse financière (utiliser coût NET si PV existant)
+        double costForFinancialAnalysis = (existingPvCost > 0) ? netInstallationCost : installationCost;
+        Map<String, Object> financial = calculateFinancialAnalysis(costForFinancialAnalysis, annualSavings, 20);
+        
+        // Ajouter le ROI net dans les résultats si PV existant
+        if (existingPvCost > 0) {
+            double netRoi = sizingService.calculateROI(netInstallationCost, annualSavings);
+            financial.put("netRoi", netRoi);
+            financial.put("grossRoi", sizingService.calculateROI(installationCost, annualSavings));
+            financial.put("existingPvCost", existingPvCost);
+        }
         
         // Résilience
         Map<String, Object> resilience = calculateResilienceMetrics(establishment, recommendedBattery);
@@ -373,6 +464,11 @@ public class ComprehensiveResultsService {
         result.put("recommendedBatteryCapacity", recommendedBattery);
         result.put("autonomy", autonomy);
         result.put("annualSavings", annualSavings);
+        result.put("installationCost", installationCost);
+        if (existingPvCost > 0) {
+            result.put("netInstallationCost", netInstallationCost);
+            result.put("existingPvCost", existingPvCost);
+        }
         result.put("aiEnhanced", true); // Indicateur que l'IA a été utilisée pour améliorer les recommandations
         
         return result;

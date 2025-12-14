@@ -46,6 +46,16 @@ public class EstablishmentRequest {
     private Integer populationServed;
     
     private Establishment.ProjectPriority projectPriority;
+    
+    // Équipements sélectionnés (avec prix réels)
+    private String selectedPanelId;
+    private Double selectedPanelPrice;
+    private String selectedBatteryId;
+    private Double selectedBatteryPrice;
+    private String selectedInverterId;
+    private Double selectedInverterPrice;
+    private String selectedControllerId;
+    private Double selectedControllerPrice;
 }
 
 

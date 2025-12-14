@@ -2,6 +2,7 @@ package com.microgrid.establishment.service;
 
 import com.microgrid.establishment.dto.EstablishmentRequest;
 import com.microgrid.establishment.dto.EstablishmentResponse;
+import com.microgrid.exception.ValidationException;
 import com.microgrid.model.Establishment;
 import com.microgrid.model.User;
 import com.microgrid.repository.EstablishmentRepository;
@@ -29,6 +30,9 @@ public class EstablishmentService {
     
     @Transactional
     public EstablishmentResponse createEstablishment(String userEmail, EstablishmentRequest request) {
+        // Validations métier
+        validateEstablishmentRequest(request);
+        
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userEmail));
         
@@ -60,6 +64,17 @@ public class EstablishmentService {
         establishment.setTotalAvailableSurfaceM2(request.getTotalAvailableSurfaceM2());
         establishment.setPopulationServed(request.getPopulationServed());
         establishment.setProjectPriority(request.getProjectPriority());
+        
+        // Équipements sélectionnés
+        establishment.setSelectedPanelId(request.getSelectedPanelId());
+        establishment.setSelectedPanelPrice(request.getSelectedPanelPrice());
+        establishment.setSelectedBatteryId(request.getSelectedBatteryId());
+        establishment.setSelectedBatteryPrice(request.getSelectedBatteryPrice());
+        establishment.setSelectedInverterId(request.getSelectedInverterId());
+        establishment.setSelectedInverterPrice(request.getSelectedInverterPrice());
+        establishment.setSelectedControllerId(request.getSelectedControllerId());
+        establishment.setSelectedControllerPrice(request.getSelectedControllerPrice());
+        
         establishment.setStatus(Establishment.EstablishmentStatus.ACTIVE);
         
         establishment = establishmentRepository.save(establishment);
@@ -97,6 +112,9 @@ public class EstablishmentService {
     
     @Transactional
     public EstablishmentResponse updateEstablishment(Long id, String userEmail, EstablishmentRequest request) {
+        // Validations métier
+        validateEstablishmentRequest(request);
+        
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userEmail));
         
@@ -142,6 +160,16 @@ public class EstablishmentService {
         establishment.setTotalAvailableSurfaceM2(request.getTotalAvailableSurfaceM2());
         establishment.setPopulationServed(request.getPopulationServed());
         establishment.setProjectPriority(request.getProjectPriority());
+        
+        // Équipements sélectionnés
+        establishment.setSelectedPanelId(request.getSelectedPanelId());
+        establishment.setSelectedPanelPrice(request.getSelectedPanelPrice());
+        establishment.setSelectedBatteryId(request.getSelectedBatteryId());
+        establishment.setSelectedBatteryPrice(request.getSelectedBatteryPrice());
+        establishment.setSelectedInverterId(request.getSelectedInverterId());
+        establishment.setSelectedInverterPrice(request.getSelectedInverterPrice());
+        establishment.setSelectedControllerId(request.getSelectedControllerId());
+        establishment.setSelectedControllerPrice(request.getSelectedControllerPrice());
         
         establishment = establishmentRepository.save(establishment);
         
@@ -190,6 +218,73 @@ public class EstablishmentService {
     public Establishment getEstablishmentEntityById(Long id) {
         return establishmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Establishment not found"));
+    }
+    
+    /**
+     * Valide les données de la requête selon les règles métier
+     */
+    private void validateEstablishmentRequest(EstablishmentRequest request) {
+        // A. Validation cohérence des surfaces
+        if (request.getInstallableSurfaceM2() != null && request.getTotalAvailableSurfaceM2() != null) {
+            if (request.getInstallableSurfaceM2() > request.getTotalAvailableSurfaceM2()) {
+                throw new ValidationException(
+                    "La surface installable (" + request.getInstallableSurfaceM2() + " m²) " +
+                    "ne peut pas dépasser la surface totale disponible (" + request.getTotalAvailableSurfaceM2() + " m²)"
+                );
+            }
+        }
+        
+        // B. Validation cohérence PV existant
+        if (request.getExistingPvInstalled() != null && request.getExistingPvInstalled()) {
+            if (request.getExistingPvPowerKwc() == null || request.getExistingPvPowerKwc() <= 0) {
+                throw new ValidationException(
+                    "Si un système PV existant est installé, la puissance PV existante (existingPvPowerKwc) doit être renseignée et positive"
+                );
+            }
+        }
+        
+        // C. Validation workflow EXISTANT vs NEW
+        boolean isExisting = request.getMonthlyConsumptionKwh() != null;
+        boolean isNew = request.getProjectBudgetDh() != null;
+        
+        if (isExisting) {
+            // Workflow EXISTANT : consommation mensuelle requise
+            if (request.getMonthlyConsumptionKwh() == null || request.getMonthlyConsumptionKwh() <= 0) {
+                throw new ValidationException(
+                    "Workflow EXISTANT : la consommation mensuelle (monthlyConsumptionKwh) est requise et doit être positive"
+                );
+            }
+            if (request.getInstallableSurfaceM2() == null || request.getInstallableSurfaceM2() <= 0) {
+                throw new ValidationException(
+                    "Workflow EXISTANT : la surface installable (installableSurfaceM2) est requise et doit être positive"
+                );
+            }
+        }
+        
+        if (isNew) {
+            // Workflow NEW : budget projet requis
+            if (request.getProjectBudgetDh() == null || request.getProjectBudgetDh() <= 0) {
+                throw new ValidationException(
+                    "Workflow NEW : le budget projet (projectBudgetDh) est requis et doit être positif"
+                );
+            }
+            if (request.getTotalAvailableSurfaceM2() == null || request.getTotalAvailableSurfaceM2() <= 0) {
+                throw new ValidationException(
+                    "Workflow NEW : la surface totale disponible (totalAvailableSurfaceM2) est requise et doit être positive"
+                );
+            }
+        }
+        
+        // D. Validation valeurs positives
+        if (request.getInstallableSurfaceM2() != null && request.getInstallableSurfaceM2() < 0) {
+            throw new ValidationException("La surface installable ne peut pas être négative");
+        }
+        if (request.getMonthlyConsumptionKwh() != null && request.getMonthlyConsumptionKwh() < 0) {
+            throw new ValidationException("La consommation mensuelle ne peut pas être négative");
+        }
+        if (request.getExistingPvPowerKwc() != null && request.getExistingPvPowerKwc() < 0) {
+            throw new ValidationException("La puissance PV existante ne peut pas être négative");
+        }
     }
 }
 

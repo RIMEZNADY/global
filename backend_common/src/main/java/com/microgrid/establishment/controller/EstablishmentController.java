@@ -55,15 +55,21 @@ public class EstablishmentController {
     private ComprehensiveResultsService comprehensiveResultsService;
     
     @PostMapping
-    public ResponseEntity<EstablishmentResponse> createEstablishment(
+    public ResponseEntity<?> createEstablishment(
             @Valid @RequestBody EstablishmentRequest request,
             Authentication authentication) {
         try {
             String email = authentication.getName();
             EstablishmentResponse response = establishmentService.createEstablishment(email, request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (com.microgrid.exception.ValidationException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Erreur lors de la création: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
     
@@ -320,8 +326,8 @@ public class EstablishmentController {
             double annualSavings = sizingService.calculateAnnualSavings(
                 monthlyConsumption, autonomy, 1.2); // 1.2 DH/kWh
             
-            // ROI (estimation coût installation: 8000 DH/kWc)
-            double installationCost = recommendedPvPower * 8000.0 + recommendedBattery * 4500.0;
+            // Utiliser le service standardisé pour le coût d'installation
+            double installationCost = comprehensiveResultsService.estimateInstallationCost(recommendedPvPower, recommendedBattery);
             double roi = sizingService.calculateROI(installationCost, annualSavings);
             
             RecommendationsResponse response = new RecommendationsResponse(

@@ -72,6 +72,31 @@ public class Establishment {
     @Column(name = "population_served")
     private Integer populationServed;
     
+    // Équipements sélectionnés (avec prix réels)
+    @Column(name = "selected_panel_id", length = 50)
+    private String selectedPanelId;
+    
+    @Column(name = "selected_panel_price")
+    private Double selectedPanelPrice;
+    
+    @Column(name = "selected_battery_id", length = 50)
+    private String selectedBatteryId;
+    
+    @Column(name = "selected_battery_price")
+    private Double selectedBatteryPrice;
+    
+    @Column(name = "selected_inverter_id", length = 50)
+    private String selectedInverterId;
+    
+    @Column(name = "selected_inverter_price")
+    private Double selectedInverterPrice;
+    
+    @Column(name = "selected_controller_id", length = 50)
+    private String selectedControllerId;
+    
+    @Column(name = "selected_controller_price")
+    private Double selectedControllerPrice;
+    
     // Objectifs
     @Enumerated(EnumType.STRING)
     private ProjectPriority projectPriority;
