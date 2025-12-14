@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:hospital_microgrid/services/solar_zone_service.dart';
 import 'package:hospital_microgrid/pages/form_b5_page.dart';
 
+import 'package:hospital_microgrid/theme/medical_solar_colors.dart';
+
 class FormB4Page extends StatefulWidget {
   final Position position;
   final SolarZone solarZone;
@@ -12,7 +14,7 @@ class FormB4Page extends StatefulWidget {
   final double solarSurface;
   final int population;
   final String hospitalType;
-  final String priority;
+  final String priorite;
 
   const FormB4Page({
     super.key,
@@ -23,7 +25,7 @@ class FormB4Page extends StatefulWidget {
     required this.solarSurface,
     required this.population,
     required this.hospitalType,
-    required this.priority,
+    required this.priorite,
   });
 
   @override
@@ -36,10 +38,10 @@ class _FormB4PageState extends State<FormB4Page> {
   @override
   void initState() {
     super.initState();
-    _calculateRecommendation();
+    calculateRecommendation();
   }
 
-  void _calculateRecommendation() {
+  void calculateRecommendation() {
     // Calculate recommendation score based on inputs
     double score = 0.0;
     
@@ -71,7 +73,7 @@ class _FormB4PageState extends State<FormB4Page> {
     recommendation = {
       'score': score,
       'hospitalType': widget.hospitalType,
-      'recommendedType': widget.hospitalType.contains('Régional') 
+      'recommendedType': widget.hospitalType.contains('Régional')
           ? 'Hôpital Régional'
           : widget.hospitalType,
     };
@@ -89,7 +91,7 @@ class _FormB4PageState extends State<FormB4Page> {
           solarSurface: widget.solarSurface,
           population: widget.population,
           hospitalType: widget.hospitalType,
-          priority: widget.priority,
+          priorite: widget.priorite,
           recommendationScore: recommendation['score'] as double,
         ),
       ),
@@ -146,7 +148,7 @@ class _FormB4PageState extends State<FormB4Page> {
       ),
       body: Container(
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+          color: isDark ? MedicalSolarColors.softGrey : MedicalSolarColors.offWhite,
         ),
         child: SafeArea(
           child: SingleChildScrollView(
@@ -161,7 +163,7 @@ class _FormB4PageState extends State<FormB4Page> {
                   style: GoogleFonts.inter(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    color: isDark ? Colors.white : MedicalSolarColors.softGrey,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -169,10 +171,10 @@ class _FormB4PageState extends State<FormB4Page> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                    color: isDark ? MedicalSolarColors.darkSurface : Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: const Color(0xFF6366F1).withOpacity(0.3),
+                      color: MedicalSolarColors.medicalBlue.withOpacity(0.3),
                       width: 2,
                     ),
                     boxShadow: [
@@ -197,7 +199,7 @@ class _FormB4PageState extends State<FormB4Page> {
                               gradient: LinearGradient(
                                 colors: [
                                   Color(SolarZoneService.getZoneColor(widget.solarZone)),
-                                  const Color(0xFF6366F1),
+                                  MedicalSolarColors.medicalBlue,
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(12),
@@ -218,17 +220,17 @@ class _FormB4PageState extends State<FormB4Page> {
                                   style: GoogleFonts.inter(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                    color: isDark ? Colors.white : MedicalSolarColors.softGrey,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Recommandation basée sur vos critères',
+                                  'Recommandation Basée sur vos critères',
                                   style: GoogleFonts.inter(
                                     fontSize: 12,
                                     color: isDark
                                         ? Colors.white70
-                                        : const Color(0xFF0F172A).withOpacity(0.7),
+                                        : MedicalSolarColors.softGrey.withOpacity(0.7),
                                   ),
                                 ),
                               ],
@@ -243,7 +245,7 @@ class _FormB4PageState extends State<FormB4Page> {
                         decoration: BoxDecoration(
                           color: isDark
                               ? Colors.white.withOpacity(0.05)
-                              : const Color(0xFF6366F1).withOpacity(0.1),
+                              : MedicalSolarColors.medicalBlue.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -259,7 +261,7 @@ class _FormB4PageState extends State<FormB4Page> {
                                     fontWeight: FontWeight.w600,
                                     color: isDark
                                         ? Colors.white.withOpacity(0.9)
-                                        : const Color(0xFF0F172A).withOpacity(0.8),
+                                        : MedicalSolarColors.softGrey.withOpacity(0.8),
                                   ),
                                 ),
                                 const SizedBox(height: 8),
@@ -268,7 +270,7 @@ class _FormB4PageState extends State<FormB4Page> {
                                   style: GoogleFonts.inter(
                                     fontSize: 32,
                                     fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF6366F1),
+                                    color: MedicalSolarColors.medicalBlue,
                                   ),
                                 ),
                               ],
@@ -280,7 +282,7 @@ class _FormB4PageState extends State<FormB4Page> {
                                   ? Colors.white.withOpacity(0.1)
                                   : Colors.grey.withOpacity(0.2),
                               valueColor: const AlwaysStoppedAnimation<Color>(
-                                Color(0xFF6366F1),
+                                MedicalSolarColors.medicalBlue,
                               ),
                             ),
                           ],
@@ -293,10 +295,10 @@ class _FormB4PageState extends State<FormB4Page> {
                         child: OutlinedButton.icon(
                           onPressed: _showDetails,
                           icon: const Icon(Icons.info_outline),
-                          label: const Text('100 Sedetails'),
+                          label: const Text('Voir détails'),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 12),
-                            side: const BorderSide(color: Color(0xFF6366F1), width: 2),
+                            side: const BorderSide(color: MedicalSolarColors.medicalBlue, width: 2),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -315,13 +317,13 @@ class _FormB4PageState extends State<FormB4Page> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        Color(0xFF6366F1),
-                        Color(0xFF06B6D4),
+                        MedicalSolarColors.medicalBlue,
+                        MedicalSolarColors.solarGreen,
                       ],
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF6366F1).withOpacity(0.3),
+                        color: MedicalSolarColors.medicalBlue.withOpacity(0.3),
                         blurRadius: 15,
                         offset: const Offset(0, 5),
                       ),
@@ -364,5 +366,3 @@ class _FormB4PageState extends State<FormB4Page> {
     );
   }
 }
-
-

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:hospital_microgrid/widgets/metric_card.dart';
+import 'package:hospital_microgrid/theme/medical_solar_colors.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -41,7 +42,7 @@ class _DashboardPageState extends State<DashboardPage> {
     
     return RefreshIndicator(
       onRefresh: _onRefresh,
-      color: const Color(0xFF6366F1),
+      color: MedicalSolarColors.medicalBlue,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.symmetric(
@@ -57,7 +58,7 @@ class _DashboardPageState extends State<DashboardPage> {
               style: TextStyle(
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white.withOpacity(0.7)
-                    : const Color(0xFF0F172A).withOpacity(0.7),
+                    : MedicalSolarColors.softGrey.withOpacity(0.7),
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
@@ -70,47 +71,47 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(vertical: 4),
-                  children: [
+                  children: const [
                     MetricCard(
                       icon: Icons.bolt,
                       label: 'Current Load',
                       value: '2.8 MW',
                       change: '+2.4%',
-                      gradientColors: const [
-                        Color(0xFF6366F1),
-                        Color(0xFF06B6D4),
+                      gradientColors: [
+                        MedicalSolarColors.medicalBlue,
+                        MedicalSolarColors.solarGreen,
                       ],
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     MetricCard(
                       icon: Icons.trending_up,
                       label: 'Solar Generation',
                       value: '1.2 MW',
                       change: '+12.5%',
-                      gradientColors: const [
-                        Color(0xFF06B6D4),
+                      gradientColors: [
+                        MedicalSolarColors.solarGreen,
                         Color(0xFF8B5CF6),
                       ],
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     MetricCard(
                       icon: Icons.show_chart,
                       label: 'System Efficiency',
                       value: '92%',
                       change: '+5.2%',
-                      gradientColors: const [
+                      gradientColors: [
                         Color(0xFF8B5CF6),
-                        Color(0xFF6366F1),
+                        MedicalSolarColors.medicalBlue,
                       ],
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     MetricCard(
                       icon: Icons.warning_amber,
                       label: 'Battery Status',
                       value: '78%',
                       change: '-1.8%',
-                      gradientColors: const [
-                        Color(0xFF6366F1),
+                      gradientColors: [
+                        MedicalSolarColors.medicalBlue,
                         Color(0xFF8B5CF6),
                       ],
                     ),
@@ -130,15 +131,15 @@ class _DashboardPageState extends State<DashboardPage> {
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
                     childAspectRatio: 1.2,
-                    children: [
+                    children: const [
                       MetricCard(
                         icon: Icons.bolt,
                         label: 'Current Load',
                         value: '2.8 MW',
                         change: '+2.4%',
-                        gradientColors: const [
-                          Color(0xFF6366F1),
-                          Color(0xFF06B6D4),
+                        gradientColors: [
+                          MedicalSolarColors.medicalBlue,
+                          MedicalSolarColors.solarGreen,
                         ],
                       ),
                       MetricCard(
@@ -146,8 +147,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         label: 'Solar Generation',
                         value: '1.2 MW',
                         change: '+12.5%',
-                        gradientColors: const [
-                          Color(0xFF06B6D4),
+                        gradientColors: [
+                          MedicalSolarColors.solarGreen,
                           Color(0xFF8B5CF6),
                         ],
                       ),
@@ -156,9 +157,9 @@ class _DashboardPageState extends State<DashboardPage> {
                         label: 'System Efficiency',
                         value: '92%',
                         change: '+5.2%',
-                        gradientColors: const [
+                        gradientColors: [
                           Color(0xFF8B5CF6),
-                          Color(0xFF6366F1),
+                          MedicalSolarColors.medicalBlue,
                         ],
                       ),
                       MetricCard(
@@ -166,8 +167,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         label: 'Battery Status',
                         value: '78%',
                         change: '-1.8%',
-                        gradientColors: const [
-                          Color(0xFF6366F1),
+                        gradientColors: [
+                          MedicalSolarColors.medicalBlue,
                           Color(0xFF8B5CF6),
                         ],
                       ),
@@ -253,13 +254,13 @@ class _DashboardPageState extends State<DashboardPage> {
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
                   ? Colors.white
-                  : const Color(0xFF0F172A),
+                  : MedicalSolarColors.softGrey,
               fontSize: isMobile ? 16 : 18,
               fontWeight: FontWeight.w600,
             ),
           ),
           SizedBox(height: isMobile ? 16 : 24),
-          Container(
+          SizedBox(
             height: isMobile ? 280 : 320,
             width: double.infinity,
             child: LineChart(
@@ -272,7 +273,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     return FlLine(
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white.withOpacity(0.15)
-                          : const Color(0xFF0F172A).withOpacity(0.15),
+                          : MedicalSolarColors.softGrey.withOpacity(0.15),
                       strokeWidth: 1,
                       dashArray: [5, 5],
                     );
@@ -300,14 +301,14 @@ class _DashboardPageState extends State<DashboardPage> {
                               style: TextStyle(
                                 color: Theme.of(context).brightness == Brightness.dark
                                     ? Colors.white.withOpacity(0.7)
-                                    : const Color(0xFF0F172A).withOpacity(0.7),
+                                    : MedicalSolarColors.softGrey.withOpacity(0.7),
                                 fontSize: isMobile ? 10 : 12,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                           );
                         }
-                        return Text('');
+                        return const Text('');
                       },
                     ),
                   ),
@@ -321,7 +322,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           style: TextStyle(
                             color: Theme.of(context).brightness == Brightness.dark
                                 ? Colors.white.withOpacity(0.7)
-                                : const Color(0xFF0F172A).withOpacity(0.7),
+                                : MedicalSolarColors.softGrey.withOpacity(0.7),
                             fontSize: isMobile ? 10 : 12,
                           ),
                         );
@@ -422,13 +423,13 @@ class _DashboardPageState extends State<DashboardPage> {
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
                   ? Colors.white
-                  : const Color(0xFF0F172A),
+                  : MedicalSolarColors.softGrey,
               fontSize: isMobile ? 16 : 18,
               fontWeight: FontWeight.w600,
             ),
           ),
           SizedBox(height: isMobile ? 16 : 24),
-          Container(
+          SizedBox(
             height: isMobile ? 280 : 320,
             width: double.infinity,
             child: BarChart(
@@ -441,7 +442,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     return FlLine(
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white.withOpacity(0.15)
-                          : const Color(0xFF0F172A).withOpacity(0.15),
+                          : MedicalSolarColors.softGrey.withOpacity(0.15),
                       strokeWidth: 1,
                       dashArray: [5, 5],
                     );
@@ -469,14 +470,14 @@ class _DashboardPageState extends State<DashboardPage> {
                               style: TextStyle(
                                 color: Theme.of(context).brightness == Brightness.dark
                                     ? Colors.white.withOpacity(0.7)
-                                    : const Color(0xFF0F172A).withOpacity(0.7),
+                                    : MedicalSolarColors.softGrey.withOpacity(0.7),
                                 fontSize: isMobile ? 10 : 12,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                           );
                         }
-                        return Text('');
+                        return const Text('');
                       },
                     ),
                   ),
@@ -490,7 +491,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           style: TextStyle(
                             color: Theme.of(context).brightness == Brightness.dark
                                 ? Colors.white.withOpacity(0.7)
-                                : const Color(0xFF0F172A).withOpacity(0.7),
+                                : MedicalSolarColors.softGrey.withOpacity(0.7),
                             fontSize: isMobile ? 10 : 12,
                           ),
                         );
@@ -558,13 +559,13 @@ class _DashboardPageState extends State<DashboardPage> {
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
                   ? Colors.white
-                  : const Color(0xFF0F172A),
+                  : MedicalSolarColors.softGrey,
               fontSize: isMobile ? 16 : 18,
               fontWeight: FontWeight.w600,
             ),
           ),
           SizedBox(height: isMobile ? 16 : 24),
-          Container(
+          SizedBox(
             height: isMobile ? 280 : 320,
             width: double.infinity,
             child: LineChart(
@@ -577,7 +578,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     return FlLine(
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white.withOpacity(0.15)
-                          : const Color(0xFF0F172A).withOpacity(0.15),
+                          : MedicalSolarColors.softGrey.withOpacity(0.15),
                       strokeWidth: 1,
                       dashArray: [5, 5],
                     );
@@ -605,14 +606,14 @@ class _DashboardPageState extends State<DashboardPage> {
                               style: TextStyle(
                                 color: Theme.of(context).brightness == Brightness.dark
                                     ? Colors.white.withOpacity(0.7)
-                                    : const Color(0xFF0F172A).withOpacity(0.7),
+                                    : MedicalSolarColors.softGrey.withOpacity(0.7),
                                 fontSize: isMobile ? 10 : 12,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                           );
                         }
-                        return Text('');
+                        return const Text('');
                       },
                     ),
                   ),
@@ -626,7 +627,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           style: TextStyle(
                             color: Theme.of(context).brightness == Brightness.dark
                                 ? Colors.white.withOpacity(0.7)
-                                : const Color(0xFF0F172A).withOpacity(0.7),
+                                : MedicalSolarColors.softGrey.withOpacity(0.7),
                             fontSize: isMobile ? 10 : 12,
                           ),
                         );

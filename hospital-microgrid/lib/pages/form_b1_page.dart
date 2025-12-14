@@ -7,6 +7,7 @@ import 'package:hospital_microgrid/services/location_service.dart';
 import 'package:hospital_microgrid/services/solar_zone_service.dart';
 import 'package:hospital_microgrid/pages/form_b2_page.dart';
 
+import 'package:hospital_microgrid/theme/medical_solar_colors.dart';
 class FormB1Page extends StatefulWidget {
   const FormB1Page({super.key});
 
@@ -24,13 +25,74 @@ class _FormB1PageState extends State<FormB1Page> {
   @override
   void initState() {
     super.initState();
-    _loadLocation();
+    // V�rifier la permission au d�marrage et demander si n�cessaire
+    _checkAndRequestLocation();
+  }
+
+  Future<void> _checkAndRequestLocation() async {
+    final hasPermission = await LocationService.isLocationPermissionGranted();
+    if (!hasPermission) {
+      // Ne pas charger automatiquement, attendre que l'utilisateur clique sur le bouton
+      setState(() {
+        _errorMessage = 'Activation de la localisation requise';
+      });
+    } else {
+      // Si la permission existe, charger automatiquement
+      await _loadLocation();
+    }
   }
 
   @override
   void dispose() {
     _mapController.dispose();
     super.dispose();
+  }
+
+  Future<void> _updateLocationFromMap(double latitude, double longitude) async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      // Cr�er une Position depuis les coordonn�es
+      final position = Position(
+        latitude: latitude,
+        longitude: longitude,
+        timestamp: DateTime.now(),
+        accuracy: 0,
+        altitude: 0,
+        altitudeAccuracy: 0,
+        heading: 0,
+        headingAccuracy: 0,
+        speed: 0,
+        speedAccuracy: 0,
+      );
+
+      // D�terminer la zone solaire depuis le backend
+      final zone = await SolarZoneService.getSolarZoneFromLocation(
+        latitude,
+        longitude,
+      );
+
+      setState(() {
+        _currentPosition = position;
+        _solarZone = zone;
+        _isLoading = false;
+      });
+
+      // Centrer la carte sur la nouvelle position avec animation
+      await Future.delayed(const Duration(milliseconds: 50));
+      _mapController.move(
+        LatLng(latitude, longitude),
+        _mapController.camera.zoom,
+      );
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Erreur lors de la mise � jour: ${e.toString()}';
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _loadLocation() async {
@@ -55,7 +117,7 @@ class _FormB1PageState extends State<FormB1Page> {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         setState(() {
-          _errorMessage = 'Le GPS n\'est pas activé';
+          _errorMessage = 'Le GPS n\'est pas aCoûtiv�';
           _isLoading = false;
         });
         return;
@@ -72,8 +134,8 @@ class _FormB1PageState extends State<FormB1Page> {
         return;
       }
 
-      // Determine solar zone
-      final zone = SolarZoneService.getSolarZoneFromLocation(
+      // Determine solar zone from backend
+      final zone = await SolarZoneService.getSolarZoneFromLocation(
         position.latitude,
         position.longitude,
       );
@@ -125,7 +187,7 @@ class _FormB1PageState extends State<FormB1Page> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Activation GPS & Carte'),
+        title: const Text('ACoûtivation GPS & Carte'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -133,7 +195,7 @@ class _FormB1PageState extends State<FormB1Page> {
       ),
       body: Container(
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+          color: isDark ? MedicalSolarColors.softGrey : MedicalSolarColors.offWhite,
         ),
         child: SafeArea(
           child: Column(
@@ -143,7 +205,7 @@ class _FormB1PageState extends State<FormB1Page> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                    color: isDark ? MedicalSolarColors.darkSurface : Colors.white,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
@@ -178,7 +240,7 @@ class _FormB1PageState extends State<FormB1Page> {
                               style: GoogleFonts.inter(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                color: isDark ? Colors.white : MedicalSolarColors.softGrey,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -188,8 +250,30 @@ class _FormB1PageState extends State<FormB1Page> {
                                 fontSize: 12,
                                 color: isDark
                                     ? Colors.white70
-                                    : const Color(0xFF0F172A).withOpacity(0.7),
+                                    : MedicalSolarColors.softGrey.withOpacity(0.7),
                               ),
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.gps_fixed,
+                                  size: 14,
+                                  color: isDark
+                                      ? Colors.white60
+                                      : MedicalSolarColors.softGrey.withOpacity(0.6),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Lat: ${_currentPosition!.latitude.toStringAsFixed(6)}, Lng: ${_currentPosition!.longitude.toStringAsFixed(6)}',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    color: isDark
+                                        ? Colors.white60
+                                        : MedicalSolarColors.softGrey.withOpacity(0.6),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -206,24 +290,30 @@ class _FormB1PageState extends State<FormB1Page> {
               Expanded(
                 child: Stack(
                   children: [
-                    if (_currentPosition != null)
-                      FlutterMap(
-                        mapController: _mapController,
-                        options: MapOptions(
-                          initialCenter: LatLng(
-                            _currentPosition!.latitude,
-                            _currentPosition!.longitude,
-                          ),
-                          initialZoom: 12.0,
-                          minZoom: 5.0,
-                          maxZoom: 18.0,
+                    FlutterMap(
+                      mapController: _mapController,
+                      options: MapOptions(
+                        initialCenter: _currentPosition != null
+                            ? LatLng(
+                                _currentPosition!.latitude,
+                                _currentPosition!.longitude,
+                              )
+                            : const LatLng(33.5731, -7.5898), // Casablanca par d�faut
+                        initialZoom: 12.0,
+                        minZoom: 5.0,
+                        maxZoom: 18.0,
+                        onTap: (tapPosition, point) async {
+                          // S�leCoûtion manuelle sur la carte
+                          await _updateLocationFromMap(point.latitude, point.longitude);
+                        },
+                      ),
+                      children: [
+                        TileLayer(
+                          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          userAgentPackageName: 'com.example.hospital_microgrid',
+                          maxZoom: 19,
                         ),
-                        children: [
-                          TileLayer(
-                            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            userAgentPackageName: 'com.example.hospital_microgrid',
-                            maxZoom: 19,
-                          ),
+                        if (_currentPosition != null)
                           MarkerLayer(
                             markers: [
                               Marker(
@@ -237,7 +327,7 @@ class _FormB1PageState extends State<FormB1Page> {
                                   decoration: BoxDecoration(
                                     color: _solarZone != null
                                         ? Color(SolarZoneService.getZoneColor(_solarZone!))
-                                        : const Color(0xFF6366F1),
+                                        : MedicalSolarColors.medicalBlue,
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color: Colors.white,
@@ -247,7 +337,7 @@ class _FormB1PageState extends State<FormB1Page> {
                                       BoxShadow(
                                         color: (_solarZone != null
                                             ? Color(SolarZoneService.getZoneColor(_solarZone!))
-                                            : const Color(0xFF6366F1))
+                                            : MedicalSolarColors.medicalBlue)
                                             .withOpacity(0.5),
                                         blurRadius: 15,
                                         spreadRadius: 3,
@@ -263,55 +353,66 @@ class _FormB1PageState extends State<FormB1Page> {
                               ),
                             ],
                           ),
-                        ],
-                      )
-                    else
-                      Center(
-                        child: _isLoading
-                            ? const CircularProgressIndicator()
-                            : Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 80,
-                                    height: 80,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: const LinearGradient(
-                                        colors: [Color(0xFF6366F1), Color(0xFF06B6D4)],
+                      ],
+                    ),
+                    // Overlay pour le chargement ou les erreurs
+                    if (_isLoading || (_currentPosition == null && _errorMessage != null))
+                      Container(
+                        color: Colors.black.withOpacity(0.3),
+                        child: Center(
+                          child: _isLoading
+                              ? const CircularProgressIndicator()
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 80,
+                                      height: 80,
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        gradient: LinearGradient(
+                                          colors: [MedicalSolarColors.medicalBlue, MedicalSolarColors.solarGreen],
+                                        ),
+                                      ),
+                                      child: const Icon(
+                                        Icons.location_off,
+                                        size: 40,
+                                        color: Colors.white,
                                       ),
                                     ),
-                                    child: const Icon(
-                                      Icons.location_off,
-                                      size: 40,
-                                      color: Colors.white,
+                                    const SizedBox(height: 24),
+                                    Text(
+                                      _errorMessage ?? 'Activation du GPS requise',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  Text(
-                                    _errorMessage ?? 'Activation du GPS requise',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 16,
-                                      color: isDark
-                                          ? Colors.white70
-                                          : const Color(0xFF0F172A).withOpacity(0.7),
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 24),
-                                  ElevatedButton.icon(
-                                    onPressed: _loadLocation,
-                                    icon: const Icon(Icons.gps_fixed),
-                                    label: const Text('Activer GPS'),
-                                    style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 24,
-                                        vertical: 12,
+                                    const SizedBox(height: 24),
+                                    ElevatedButton.icon(
+                                      onPressed: _loadLocation,
+                                      icon: const Icon(Icons.gps_fixed),
+                                      label: const Text('Activer la localisation'),
+                                      style: ElevatedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 24,
+                                          vertical: 12,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      'Cliquez sur la carte pour choisir\nun autre emplacement',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 13,
+                                        color: Colors.white.withOpacity(0.8),
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                        ),
                       ),
                     if (_currentPosition != null)
                       Positioned(
@@ -329,7 +430,7 @@ class _FormB1PageState extends State<FormB1Page> {
                           },
                           backgroundColor: _solarZone != null
                               ? Color(SolarZoneService.getZoneColor(_solarZone!))
-                              : const Color(0xFF6366F1),
+                              : MedicalSolarColors.medicalBlue,
                           child: const Icon(Icons.my_location, color: Colors.white),
                         ),
                       ),
@@ -337,11 +438,11 @@ class _FormB1PageState extends State<FormB1Page> {
                 ),
               ),
               // Coordinates info
-              if (_currentPosition != null)
+              if (_currentPosition != null && _solarZone != null)
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                    color: isDark ? MedicalSolarColors.darkSurface : Colors.white,
                     border: Border(
                       top: BorderSide(
                         color: isDark
@@ -358,17 +459,29 @@ class _FormB1PageState extends State<FormB1Page> {
                         size: 16,
                         color: isDark
                             ? Colors.white70
-                            : const Color(0xFF0F172A).withOpacity(0.7),
+                            : MedicalSolarColors.softGrey.withOpacity(0.7),
                       ),
                       const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          'Lat: ${_currentPosition!.latitude.toStringAsFixed(6)}, Lng: ${_currentPosition!.longitude.toStringAsFixed(6)}',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: isDark
+                                ? Colors.white70
+                                : MedicalSolarColors.softGrey.withOpacity(0.7),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
                       Text(
-                        'Lat: ${_currentPosition!.latitude.toStringAsFixed(6)}, '
-                        'Lng: ${_currentPosition!.longitude.toStringAsFixed(6)}',
+                        '� Cliquez sur la carte pour changer',
                         style: GoogleFonts.inter(
-                          fontSize: 12,
+                          fontSize: 11,
                           color: isDark
-                              ? Colors.white70
-                              : const Color(0xFF0F172A).withOpacity(0.7),
+                              ? Colors.white60
+                              : MedicalSolarColors.softGrey.withOpacity(0.6),
+                          fontStyle: FontStyle.italic,
                         ),
                       ),
                     ],
@@ -378,7 +491,7 @@ class _FormB1PageState extends State<FormB1Page> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                  color: isDark ? MedicalSolarColors.darkSurface : Colors.white,
                   border: Border(
                     top: BorderSide(
                       color: isDark
@@ -396,13 +509,13 @@ class _FormB1PageState extends State<FormB1Page> {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          Color(0xFF6366F1),
-                          Color(0xFF06B6D4),
+                          MedicalSolarColors.medicalBlue,
+                          MedicalSolarColors.solarGreen,
                         ],
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF6366F1).withOpacity(0.3),
+                          color: MedicalSolarColors.medicalBlue.withOpacity(0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),

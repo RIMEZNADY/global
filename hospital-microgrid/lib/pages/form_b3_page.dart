@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:hospital_microgrid/services/solar_zone_service.dart';
 import 'package:hospital_microgrid/pages/form_b4_page.dart';
 
+import 'package:hospital_microgrid/theme/medical_solar_colors.dart';
+
 class FormB3Page extends StatefulWidget {
   final Position position;
   final SolarZone solarZone;
@@ -28,7 +30,7 @@ class FormB3Page extends StatefulWidget {
 
 class _FormB3PageState extends State<FormB3Page> {
   String? _selectedHospitalType;
-  String? _selectedPriority;
+  String? _selectedPriorite;
 
   final List<String> _hospitalTypes = [
     'Hôpital Régional',
@@ -39,14 +41,14 @@ class _FormB3PageState extends State<FormB3Page> {
     'Autre',
   ];
 
-  final List<String> _priorities = [
+  final List<String> _priorites = [
     'Haute - Production maximale d\'énergie',
     'Moyenne - Équilibre coût/efficacité',
     'Basse - Coût minimal',
   ];
 
   void _handleNext() {
-    if (_selectedHospitalType == null || _selectedPriority == null) {
+    if (_selectedHospitalType == null || _selectedPriorite == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Veuillez sélectionner le type d\'hôpital et la priorité'),
@@ -67,7 +69,7 @@ class _FormB3PageState extends State<FormB3Page> {
           solarSurface: widget.solarSurface,
           population: widget.population,
           hospitalType: _selectedHospitalType!,
-          priority: _selectedPriority!,
+          priorite: _selectedPriorite!,
         ),
       ),
     );
@@ -87,7 +89,7 @@ class _FormB3PageState extends State<FormB3Page> {
       ),
       body: Container(
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+          color: isDark ? MedicalSolarColors.softGrey : MedicalSolarColors.offWhite,
         ),
         child: SafeArea(
           child: SingleChildScrollView(
@@ -102,7 +104,7 @@ class _FormB3PageState extends State<FormB3Page> {
                   style: GoogleFonts.inter(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    color: isDark ? Colors.white : MedicalSolarColors.softGrey,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -114,12 +116,12 @@ class _FormB3PageState extends State<FormB3Page> {
                     fontWeight: FontWeight.w600,
                     color: isDark
                         ? Colors.white.withOpacity(0.9)
-                        : const Color(0xFF0F172A).withOpacity(0.8),
+                        : MedicalSolarColors.softGrey.withOpacity(0.8),
                   ),
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  value: _selectedHospitalType,
+                  initialValue: _selectedHospitalType,
                   decoration: InputDecoration(
                     hintText: 'Sélectionnez le type d\'hôpital',
                     prefixIcon: const Icon(Icons.local_hospital),
@@ -142,16 +144,16 @@ class _FormB3PageState extends State<FormB3Page> {
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
-                        color: Color(0xFF6366F1),
+                        color: MedicalSolarColors.medicalBlue,
                         width: 2,
                       ),
                     ),
                     filled: true,
-                    fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                    fillColor: isDark ? MedicalSolarColors.darkSurface : Colors.white,
                   ),
-                  dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                  dropdownColor: isDark ? MedicalSolarColors.darkSurface : Colors.white,
                   style: GoogleFonts.inter(
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    color: isDark ? Colors.white : MedicalSolarColors.softGrey,
                   ),
                   items: _hospitalTypes.map((type) {
                     return DropdownMenuItem(
@@ -174,12 +176,12 @@ class _FormB3PageState extends State<FormB3Page> {
                     fontWeight: FontWeight.w600,
                     color: isDark
                         ? Colors.white.withOpacity(0.9)
-                        : const Color(0xFF0F172A).withOpacity(0.8),
+                        : MedicalSolarColors.softGrey.withOpacity(0.8),
                   ),
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  value: _selectedPriority,
+                  initialValue: _selectedPriorite,
                   decoration: InputDecoration(
                     hintText: 'Sélectionnez la priorité',
                     prefixIcon: const Icon(Icons.priority_high),
@@ -202,26 +204,26 @@ class _FormB3PageState extends State<FormB3Page> {
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
-                        color: Color(0xFF6366F1),
+                        color: MedicalSolarColors.medicalBlue,
                         width: 2,
                       ),
                     ),
                     filled: true,
-                    fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                    fillColor: isDark ? MedicalSolarColors.darkSurface : Colors.white,
                   ),
-                  dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                  dropdownColor: isDark ? MedicalSolarColors.darkSurface : Colors.white,
                   style: GoogleFonts.inter(
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    color: isDark ? Colors.white : MedicalSolarColors.softGrey,
                   ),
-                  items: _priorities.map((priority) {
+                  items: _priorites.map((priorite) {
                     return DropdownMenuItem(
-                      value: priority,
-                      child: Text(priority),
+                      value: priorite,
+                      child: Text(priorite),
                     );
                   }).toList(),
                   onChanged: (value) {
                     setState(() {
-                      _selectedPriority = value;
+                      _selectedPriorite = value;
                     });
                   },
                 ),
@@ -234,13 +236,13 @@ class _FormB3PageState extends State<FormB3Page> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        Color(0xFF6366F1),
-                        Color(0xFF06B6D4),
+                        MedicalSolarColors.medicalBlue,
+                        MedicalSolarColors.solarGreen,
                       ],
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF6366F1).withOpacity(0.3),
+                        color: MedicalSolarColors.medicalBlue.withOpacity(0.3),
                         blurRadius: 15,
                         offset: const Offset(0, 5),
                       ),
@@ -283,5 +285,3 @@ class _FormB3PageState extends State<FormB3Page> {
     );
   }
 }
-
-

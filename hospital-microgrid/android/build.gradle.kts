@@ -5,14 +5,13 @@ allprojects {
     }
 }
 
-val newBuildDir: Directory =
-    rootProject.layout.buildDirectory
-        .dir("../../build")
-        .get()
+// Fix pour les espaces dans le chemin utilisateur - utiliser un buildDir absolu sans espace
+val customBuildDirPath = "C:/build/flutter-build"
+val newBuildDir = rootProject.layout.projectDirectory.dir(customBuildDirPath)
 rootProject.layout.buildDirectory.value(newBuildDir)
 
 subprojects {
-    val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
+    val newSubprojectBuildDir = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
 subprojects {

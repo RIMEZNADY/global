@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:hospital_microgrid/services/solar_zone_service.dart';
 import 'package:hospital_microgrid/pages/form_b3_page.dart';
 
+import 'package:hospital_microgrid/theme/medical_solar_colors.dart';
+
 class FormB2Page extends StatefulWidget {
   final Position position;
   final SolarZone solarZone;
@@ -25,7 +27,7 @@ class _FormB2PageState extends State<FormB2Page> {
   final _solarSurfaceController = TextEditingController();
   final _populationController = TextEditingController();
 
-  // Auto-estimated values based on location
+  // Auto-estimated values Based on location
   String? _estimatedBudget;
   String? _estimatedSurface;
 
@@ -36,7 +38,7 @@ class _FormB2PageState extends State<FormB2Page> {
   }
 
   void _estimateValues() {
-    // Auto-estimate based on solar zone and location
+    // Auto-estimate Based on solar zone and location
     // Zone 1 (very high): higher estimates
     // Zone 4 (moderate): lower estimates
     final zoneMultiplier = {
@@ -48,13 +50,13 @@ class _FormB2PageState extends State<FormB2Page> {
 
     final multiplier = zoneMultiplier[widget.solarZone] ?? 1.0;
     
-    // Estimate budget (DH) based on location
-    final baseBudget = 2000000.0; // Base 2M DH
+    // Estimate budget (DH) Based on location
+    const baseBudget = 2000000.0; // Base 2M DH
     final estimatedBudget = baseBudget * multiplier;
     _estimatedBudget = estimatedBudget.toStringAsFixed(0);
 
-    // Estimate surface (m²) based on location
-    final baseSurface = 5000.0; // Base 5000 m²
+    // Estimate surface (m²) Based on location
+    const baseSurface = 5000.0; // Base 5000 m²
     final estimatedSurface = baseSurface * multiplier;
     _estimatedSurface = estimatedSurface.toStringAsFixed(0);
   }
@@ -112,7 +114,7 @@ class _FormB2PageState extends State<FormB2Page> {
       ),
       body: Container(
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+          color: isDark ? MedicalSolarColors.softGrey : MedicalSolarColors.offWhite,
         ),
         child: SafeArea(
           child: SingleChildScrollView(
@@ -151,7 +153,7 @@ class _FormB2PageState extends State<FormB2Page> {
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
-                                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                  color: isDark ? Colors.white : MedicalSolarColors.softGrey,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -161,7 +163,7 @@ class _FormB2PageState extends State<FormB2Page> {
                                   fontSize: 12,
                                   color: isDark
                                       ? Colors.white70
-                                      : const Color(0xFF0F172A).withOpacity(0.7),
+                                      : MedicalSolarColors.softGrey.withOpacity(0.7),
                                 ),
                               ),
                             ],
@@ -177,7 +179,7 @@ class _FormB2PageState extends State<FormB2Page> {
                     style: GoogleFonts.inter(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: isDark ? Colors.white : MedicalSolarColors.softGrey,
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -189,7 +191,7 @@ class _FormB2PageState extends State<FormB2Page> {
                       fontWeight: FontWeight.w600,
                       color: isDark
                           ? Colors.white.withOpacity(0.9)
-                          : const Color(0xFF0F172A).withOpacity(0.8),
+                          : MedicalSolarColors.softGrey.withOpacity(0.8),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -221,15 +223,15 @@ class _FormB2PageState extends State<FormB2Page> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: const BorderSide(
-                                color: Color(0xFF6366F1),
+                                color: MedicalSolarColors.medicalBlue,
                                 width: 2,
                               ),
                             ),
                             filled: true,
-                            fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                            fillColor: isDark ? MedicalSolarColors.darkSurface : Colors.white,
                           ),
                           style: GoogleFonts.inter(
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark ? Colors.white : MedicalSolarColors.softGrey,
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -262,7 +264,7 @@ class _FormB2PageState extends State<FormB2Page> {
                       fontWeight: FontWeight.w600,
                       color: isDark
                           ? Colors.white.withOpacity(0.9)
-                          : const Color(0xFF0F172A).withOpacity(0.8),
+                          : MedicalSolarColors.softGrey.withOpacity(0.8),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -295,15 +297,15 @@ class _FormB2PageState extends State<FormB2Page> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: const BorderSide(
-                                color: Color(0xFF6366F1),
+                                color: MedicalSolarColors.medicalBlue,
                                 width: 2,
                               ),
                             ),
                             filled: true,
-                            fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                            fillColor: isDark ? MedicalSolarColors.darkSurface : Colors.white,
                           ),
                           style: GoogleFonts.inter(
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark ? Colors.white : MedicalSolarColors.softGrey,
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -336,7 +338,7 @@ class _FormB2PageState extends State<FormB2Page> {
                       fontWeight: FontWeight.w600,
                       color: isDark
                           ? Colors.white.withOpacity(0.9)
-                          : const Color(0xFF0F172A).withOpacity(0.8),
+                          : MedicalSolarColors.softGrey.withOpacity(0.8),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -366,15 +368,15 @@ class _FormB2PageState extends State<FormB2Page> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                          color: Color(0xFF6366F1),
+                          color: MedicalSolarColors.medicalBlue,
                           width: 2,
                         ),
                       ),
                       filled: true,
-                      fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                      fillColor: isDark ? MedicalSolarColors.darkSurface : Colors.white,
                     ),
                     style: GoogleFonts.inter(
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: isDark ? Colors.white : MedicalSolarColors.softGrey,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -395,7 +397,7 @@ class _FormB2PageState extends State<FormB2Page> {
                       fontWeight: FontWeight.w600,
                       color: isDark
                           ? Colors.white.withOpacity(0.9)
-                          : const Color(0xFF0F172A).withOpacity(0.8),
+                          : MedicalSolarColors.softGrey.withOpacity(0.8),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -424,15 +426,15 @@ class _FormB2PageState extends State<FormB2Page> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                          color: Color(0xFF6366F1),
+                          color: MedicalSolarColors.medicalBlue,
                           width: 2,
                         ),
                       ),
                       filled: true,
-                      fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                      fillColor: isDark ? MedicalSolarColors.darkSurface : Colors.white,
                     ),
                     style: GoogleFonts.inter(
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: isDark ? Colors.white : MedicalSolarColors.softGrey,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -453,13 +455,13 @@ class _FormB2PageState extends State<FormB2Page> {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          Color(0xFF6366F1),
-                          Color(0xFF06B6D4),
+                          MedicalSolarColors.medicalBlue,
+                          MedicalSolarColors.solarGreen,
                         ],
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF6366F1).withOpacity(0.3),
+                          color: MedicalSolarColors.medicalBlue.withOpacity(0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
@@ -503,4 +505,3 @@ class _FormB2PageState extends State<FormB2Page> {
     );
   }
 }
-
