@@ -318,20 +318,20 @@ class _LocationSetupPageState extends State<LocationSetupPage> {
  Container(
  padding: const EdgeInsets.all(16),
  decoration: BoxDecoration(
- color: Colors.red.withOpacity(0.1),
+              color: MedicalSolarColors.error.withOpacity(0.08),
  borderRadius: BorderRadius.circular(12),
  border: Border.all(
- color: Colors.red.withOpacity(0.3),
+              color: MedicalSolarColors.error.withOpacity(0.25),
  ),
  ),
  child: Row(
  children: [
- const Icon(Icons.error_outline, color: Colors.red),
+              const Icon(Icons.error_outline, color: MedicalSolarColors.error),
  const SizedBox(width: 12),
  Expanded(
  child: Text(
  _errorMessage!,
- style: const TextStyle(color: Colors.red),
+              style: const TextStyle(color: MedicalSolarColors.error),
  ),
  ),
  ],

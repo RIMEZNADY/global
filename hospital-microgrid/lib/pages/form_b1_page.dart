@@ -463,25 +463,41 @@ class _FormB1PageState extends State<FormB1Page> {
                       ),
                       const SizedBox(width: 8),
                       Flexible(
-                        child: Text(
-                          'Lat: ${_currentPosition!.latitude.toStringAsFixed(6)}, Lng: ${_currentPosition!.longitude.toStringAsFixed(6)}',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: isDark
-                                ? Colors.white70
-                                : MedicalSolarColors.softGrey.withOpacity(0.7),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        '� Cliquez sur la carte pour changer',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          color: isDark
-                              ? Colors.white60
-                              : MedicalSolarColors.softGrey.withOpacity(0.6),
-                          fontStyle: FontStyle.italic,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Localisation',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: isDark
+                                    ? Colors.white70
+                                    : MedicalSolarColors.softGrey,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Lat: ${_currentPosition!.latitude.toStringAsFixed(6)}, Lng: ${_currentPosition!.longitude.toStringAsFixed(6)}',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: isDark
+                                    ? Colors.white70
+                                    : MedicalSolarColors.softGrey.withOpacity(0.7),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '* Cliquez sur la carte pour changer',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: isDark
+                                    ? Colors.white60
+                                    : MedicalSolarColors.softGrey.withOpacity(0.6),
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

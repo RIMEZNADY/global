@@ -181,7 +181,7 @@ class _FormB2PageState extends State<FormB2Page> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Veuillez entrer des valeurs valides pour l\'intervalle de $fieldName'),
-            backgroundColor: Colors.red,
+            backgroundColor: MedicalSolarColors.error,
           ),
         );
         return null;
@@ -191,7 +191,7 @@ class _FormB2PageState extends State<FormB2Page> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('La valeur minimale doit être inférieure à la valeur maximale pour $fieldName'),
-            backgroundColor: Colors.red,
+            backgroundColor: MedicalSolarColors.error,
           ),
         );
         return null;
@@ -205,7 +205,7 @@ class _FormB2PageState extends State<FormB2Page> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Veuillez entrer une valeur valide pour $fieldName'),
-            backgroundColor: Colors.red,
+            backgroundColor: MedicalSolarColors.error,
           ),
         );
         return null;
@@ -229,7 +229,7 @@ class _FormB2PageState extends State<FormB2Page> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Veuillez entrer des valeurs valides pour l\'intervalle de $fieldName'),
-            backgroundColor: Colors.red,
+            backgroundColor: MedicalSolarColors.error,
           ),
         );
         return null;
@@ -239,7 +239,7 @@ class _FormB2PageState extends State<FormB2Page> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('La valeur minimale doit être inférieure à la valeur maximale pour $fieldName'),
-            backgroundColor: Colors.red,
+            backgroundColor: MedicalSolarColors.error,
           ),
         );
         return null;
@@ -253,7 +253,7 @@ class _FormB2PageState extends State<FormB2Page> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Veuillez entrer une valeur valide pour $fieldName'),
-            backgroundColor: Colors.red,
+            backgroundColor: MedicalSolarColors.error,
           ),
         );
         return null;

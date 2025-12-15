@@ -200,7 +200,7 @@ class _FormA1PageState extends State<FormA1Page> {
       if (_selectedTypeBackend == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Veuillez s�leCoûtionner un type d\'�Ã©tablissement'),
+            content: Text('Veuillez selectionner un type d\'etablissement'),
             backgroundColor: Colors.orange,
           ),
         );
@@ -228,7 +228,7 @@ class _FormA1PageState extends State<FormA1Page> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Identification de l\'�Ã©tablissement'),
+        title: const Text('Identification de l\'etablissement'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -508,25 +508,41 @@ class _FormA1PageState extends State<FormA1Page> {
                       ),
                       const SizedBox(width: 8),
                       Flexible(
-                        child: Text(
-                          'Lat: ${_currentPosition!.latitude.toStringAsFixed(6)}, Lng: ${_currentPosition!.longitude.toStringAsFixed(6)}',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: isDark
-                                ? Colors.white70
-                                : MedicalSolarColors.softGrey.withOpacity(0.7),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        '� Cliquez sur la carte pour changer',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          color: isDark
-                              ? Colors.white60
-                              : MedicalSolarColors.softGrey.withOpacity(0.6),
-                          fontStyle: FontStyle.italic,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Localisation',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: isDark
+                                    ? Colors.white70
+                                    : MedicalSolarColors.softGrey,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Lat: ${_currentPosition!.latitude.toStringAsFixed(6)}, Lng: ${_currentPosition!.longitude.toStringAsFixed(6)}',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: isDark
+                                    ? Colors.white70
+                                    : MedicalSolarColors.softGrey.withOpacity(0.7),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '* Cliquez sur la carte pour changer',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: isDark
+                                    ? Colors.white60
+                                    : MedicalSolarColors.softGrey.withOpacity(0.6),
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

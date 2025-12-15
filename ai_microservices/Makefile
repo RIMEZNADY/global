@@ -12,7 +12,7 @@ train:
 	$(PYTHON) -m src.train_model
 
 serve:
-	uvicorn src.api:app --host 0.0.0.0 --port 8000 --reload
+	$(PYTHON) -m uvicorn src.api:app --host 0.0.0.0 --port 8000 --reload
 
 autotrain:
 	$(PYTHON) -m src.auto_train

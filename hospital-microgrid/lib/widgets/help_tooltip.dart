@@ -302,7 +302,7 @@ class LabelWithHelp extends StatelessWidget {
 
  fontSize: 14,
 
- color: Colors.red,
+          color: MedicalSolarColors.error,
 
  fontWeight: FontWeight.bold,
 

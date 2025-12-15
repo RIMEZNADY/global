@@ -210,7 +210,7 @@ class _RegisterPageState extends State<RegisterPage>
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Cr�ez votre compte pour commencer',
+                        'Creez votre compte pour commencer',
                         style: GoogleFonts.inter(
                           fontSize: 16,
                           color: isDark
@@ -226,7 +226,7 @@ class _RegisterPageState extends State<RegisterPage>
                         decoration: _buildInputDecoration(
                           context,
                           isDark,
-                          'Pr�nom',
+                          'Prenom',
                           Icons.person_outline,
                         ),
                         style: GoogleFonts.inter(
@@ -234,7 +234,7 @@ class _RegisterPageState extends State<RegisterPage>
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Veuillez entrer votre pr�nom';
+                            return 'Veuillez entrer votre prenom';
                           }
                           return null;
                         },
@@ -312,7 +312,7 @@ class _RegisterPageState extends State<RegisterPage>
                         decoration: _buildInputDecoration(
                           context,
                           isDark,
-                          'T�l�phone (optionnel)',
+                          'Telephone (optionnel)',
                           Icons.phone_outlined,
                         ),
                         style: GoogleFonts.inter(

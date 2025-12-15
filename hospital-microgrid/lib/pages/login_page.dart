@@ -92,11 +92,11 @@ class _LoginPageState extends State<LoginPage>
             _isLoading = false;
           });
 
-          // Afficher l'erreur
+          // Afficher l'erreur avec la palette Medical Solar
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(e.toString()),
-              backgroundColor: Colors.red,
+              backgroundColor: MedicalSolarColors.error,
               duration: const Duration(seconds: 3),
             ),
           );
