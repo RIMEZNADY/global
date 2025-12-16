@@ -1139,25 +1139,7 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
 
   Widget _buildBeforeAfterChart(Map<String, dynamic> beforeAfter, bool isDark, bool isMobile, {bool isNew = false}) {
     final beforeMonthlyBill = (beforeAfter['beforeMonthlyBill'] ?? 0).toDouble();
-    var afterMonthlyBill = (beforeAfter['afterMonthlyBill'] ?? 0).toDouble();
-    
-    // Debug: afficher les valeurs
-    print('📊 Graphique Comparaison Projeté:');
-    print('   beforeMonthlyBill (Sans microgrid): $beforeMonthlyBill DH');
-    print('   afterMonthlyBill (Avec microgrid): $afterMonthlyBill DH');
-    print('   Économies mensuelles: ${beforeMonthlyBill - afterMonthlyBill} DH');
-    
-    // S'assurer que les valeurs sont valides
-    if (beforeMonthlyBill <= 0) {
-      print('⚠️ ATTENTION: beforeMonthlyBill est 0 ou négatif!');
-    }
-    if (afterMonthlyBill < 0) {
-      print('⚠️ ATTENTION: afterMonthlyBill est négatif!');
-    }
-    
-    // Calculer le maxY pour inclure les deux barres avec une marge
-    final maxValue = (beforeMonthlyBill > afterMonthlyBill ? beforeMonthlyBill : (afterMonthlyBill > 0 ? afterMonthlyBill : beforeMonthlyBill * 0.1)) * 1.2;
-    final minValue = 0.0;
+    final afterMonthlyBill = (beforeAfter['afterMonthlyBill'] ?? 0).toDouble();
 
     // Créer deux groupes de barres séparés pour une meilleure visibilité
     final groups = [
@@ -1179,9 +1161,7 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
         x: 1,
         barRods: [
           BarChartRodData(
-            // S'assurer que la barre est visible même si la valeur est 0 ou très petite
-            // Utiliser au moins 1% de la valeur max pour la visibilité si la valeur est 0
-            toY: afterMonthlyBill > 0 ? afterMonthlyBill : (maxValue * 0.01),
+            toY: afterMonthlyBill,
             color: MedicalSolarColors.solarGreen.withOpacity(0.8),
             width: 30,
             borderRadius: const BorderRadius.only(
@@ -1293,8 +1273,7 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
                 BarChartData(
                   barGroups: groups,
                   alignment: BarChartAlignment.spaceAround,
-                  minY: minValue,
-                  maxY: maxValue,
+                  maxY: (beforeMonthlyBill > afterMonthlyBill ? beforeMonthlyBill : afterMonthlyBill) * 1.2,
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
@@ -1320,7 +1299,7 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
                             ),
                           );
                         },
-                        interval: maxValue / 5,
+                        interval: (beforeMonthlyBill > afterMonthlyBill ? beforeMonthlyBill : afterMonthlyBill) / 5,
                       ),
                     ),
                     rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),

@@ -1,0 +1,140 @@
+.history-container {
+  min-height: 100vh;
+  background: var(--off-white);
+}
+
+.history-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--soft-grey);
+    margin-bottom: 8px;
+  }
+  
+  p {
+    font-size: 14px;
+    color: var(--soft-grey);
+    opacity: 0.7;
+  }
+  
+  .refresh-btn {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--medical-blue), var(--solar-green));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: fit-content;
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(78, 168, 222, 0.4);
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.error-message {
+  background: rgba(231, 76, 60, 0.1);
+  color: var(--error);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(231, 76, 60, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  
+  .create-btn {
+    padding: 8px 16px;
+    background: var(--medical-blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: var(--medical-blue-dark);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+.loading-container {
+  text-align: center;
+  padding: 40px;
+  color: var(--soft-grey);
+  opacity: 0.7;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.charts-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.chart-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--soft-grey);
+    margin-bottom: 24px;
+  }
+  
+  canvas {
+    height: 320px !important;
+  }
+  
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .history-content {
+    padding: 16px;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+}
