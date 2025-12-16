@@ -269,33 +269,40 @@ class _FormA1PageState extends State<FormA1Page> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.gps_fixed,
-                            color: Color(SolarZoneService.getZoneColor(_solarZone!)),
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Localisation Selectionnee',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: isDark ? Colors.white : MedicalSolarColors.softGrey,
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.gps_fixed,
+                              color: _solarZone != null
+                                  ? Color(SolarZoneService.getZoneColor(_solarZone!))
+                                  : MedicalSolarColors.medicalBlue,
+                              size: 20,
                             ),
-                          ),
-                          const Spacer(),
-                          TextButton.icon(
-                            onPressed: _changeLocation,
-                            icon: const Icon(Icons.edit_location, size: 18),
-                            label: const Text('Modifier'),
-                            style: TextButton.styleFrom(
-                              foregroundColor: MedicalSolarColors.medicalBlue,
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Localisation Selectionnee',
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark ? Colors.white : MedicalSolarColors.softGrey,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                            const SizedBox(width: 8),
+                            TextButton.icon(
+                              onPressed: _changeLocation,
+                              icon: const Icon(Icons.edit_location, size: 18),
+                              label: const Text('Modifier'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: MedicalSolarColors.medicalBlue,
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              ),
+                            ),
+                          ],
+                        ),
                       const SizedBox(height: 12),
                       Text(
                         'Lat: ${_currentPosition!.latitude.toStringAsFixed(6)}, Lng: ${_currentPosition!.longitude.toStringAsFixed(6)}',

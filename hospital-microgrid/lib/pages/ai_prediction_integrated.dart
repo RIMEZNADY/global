@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:hospital_microgrid/widgets/metric_card.dart';
@@ -33,19 +34,26 @@ class _AIPredictionPageIntegratedState extends State<AIPredictionPageIntegrated>
  }
 
  Future<void> _loadData() async {
+ if (!mounted) return;
+ 
  setState(() {
  _isLoading = true;
  _errorMessage = null;
  });
 
  try {
- // Recuperer le premier eÃ©tablissement de l'utilisateur
- final establishments = await EstablishmentService.getUserEstablishments();
+ // Recuperer le premier établissement de l'utilisateur avec timeout
+ final establishments = await EstablishmentService.getUserEstablishments()
+   .timeout(const Duration(seconds: 5), onTimeout: () {
+     throw TimeoutException('Timeout lors de la récupération des établissements', const Duration(seconds: 5));
+   });
  if (establishments.isEmpty) {
+ if (mounted) {
  setState(() {
- _errorMessage = 'Aucun eÃ©tablissement trouve. Veuillez creer un eÃ©tablissement d\'abord.';
+ _errorMessage = 'Aucun établissement trouvé. Veuillez créer un établissement d\'abord.';
  _isLoading = false;
  });
+ }
  return;
  }
 
@@ -56,56 +64,106 @@ class _AIPredictionPageIntegratedState extends State<AIPredictionPageIntegrated>
  _selectedSeason = 'ete';
  }
 
- // Charger toutes les donnees en parallele
- Future<LongTermForecastResponse> forecastFuture;
+ // Charger les données individuellement avec timeouts courts pour éviter le blocage
+ // Timeout réduit à 8 secondes pour éviter le blocage
+ const timeoutDuration = Duration(seconds: 8);
+ 
+ // Charger les prévisions (avec vérification mounted)
+ if (mounted) {
+ try {
  if (_forecastMode == 'seasonal' && _selectedSeason != null) {
- forecastFuture = AiService.getSeasonalForecast(_establishmentId!, season: _selectedSeason!);
+ _seasonalForecast = await AiService.getSeasonalForecast(_establishmentId!, season: _selectedSeason!)
+ .timeout(timeoutDuration, onTimeout: () {
+ throw TimeoutException('Timeout lors du chargement des prévisions saisonnières', timeoutDuration);
+ });
+ _forecast = null;
  } else {
- forecastFuture = AiService.getForecast(_establishmentId!, horizonDays: _selectedHorizonDays);
+ _forecast = await AiService.getForecast(_establishmentId!, horizonDays: _selectedHorizonDays)
+ .timeout(timeoutDuration, onTimeout: () {
+ throw TimeoutException('Timeout lors du chargement des prévisions', timeoutDuration);
+ });
+ _seasonalForecast = null;
+ }
+ } catch (e) {
+ debugPrint('Erreur lors du chargement des prévisions: $e');
+ // Continuer même si les prévisions échouent
+ }
  }
  
- final results = await Future.wait([
- forecastFuture,
- AiService.getMlRecommendations(_establishmentId!),
- AiService.getAnomalies(_establishmentId!, days: 7),
- AiService.simulate(
+ // Charger les recommandations ML (avec vérification mounted)
+ if (mounted) {
+ try {
+ _mlRecommendations = await AiService.getMlRecommendations(_establishmentId!)
+ .timeout(timeoutDuration, onTimeout: () {
+ throw TimeoutException('Timeout lors du chargement des recommandations ML', timeoutDuration);
+ });
+ } catch (e) {
+ debugPrint('Erreur lors du chargement des recommandations ML: $e');
+ // Continuer même si les recommandations échouent
+ }
+ }
+ 
+ // Charger les anomalies (avec vérification mounted)
+ if (mounted) {
+ try {
+ _anomalies = await AiService.getAnomalies(_establishmentId!, days: 7)
+ .timeout(timeoutDuration, onTimeout: () {
+ throw TimeoutException('Timeout lors du chargement des anomalies', timeoutDuration);
+ });
+ } catch (e) {
+ debugPrint('Erreur lors du chargement des anomalies: $e');
+ // Continuer même si les anomalies échouent
+ }
+ }
+ 
+ // Charger la simulation (optionnel, peut être ignoré si échoue) (avec vérification mounted)
+ if (mounted) {
+ try {
+ _simulation = await AiService.simulate(
  _establishmentId!,
  startDate: DateTime.now().toIso8601String(),
  days: 3,
  batteryCapacityKwh: 500.0,
  initialSocKwh: 250.0,
- ),
- ]);
-
- setState(() {
- if (_forecastMode == 'seasonal') {
- _seasonalForecast = results[0] as LongTermForecastResponse;
- _forecast = null;
- } else {
- _forecast = results[0] as LongTermForecastResponse;
- _seasonalForecast = null;
- }
- _mlRecommendations = results[1] as MlRecommendationsResponse;
- _anomalies = results[2] as AnomalyGraphResponse;
- _simulation = results[3] as SimulationResponse;
- _isLoading = false;
+ ).timeout(timeoutDuration, onTimeout: () {
+ throw TimeoutException('Timeout lors de la simulation', timeoutDuration);
  });
  } catch (e) {
+ debugPrint('Erreur lors de la simulation: $e');
+ // La simulation est optionnelle, on continue
+ }
+ }
+ 
+ // Toujours mettre à jour l'état même si certaines données n'ont pas pu être chargées
+ if (mounted) {
+ setState(() {
+ _isLoading = false;
+ // Si aucune donnée n'a pu être chargée, afficher un message
+ if (_forecast == null && _seasonalForecast == null && _mlRecommendations == null && _anomalies == null) {
+ _errorMessage = 'Impossible de charger les données AI. Vérifiez que le service AI est disponible.';
+ }
+ });
+ }
+ } catch (e) {
+ // Gérer les erreurs critiques (établissements, etc.)
+ if (mounted) {
  setState(() {
  final errorMsg = e.toString();
  if (errorMsg.contains('403') || errorMsg.contains('401')) {
  _errorMessage = 'Erreur d\'authentification. Veuillez vous reconnecter.';
  } else if (errorMsg.contains('404')) {
- _errorMessage = 'Ressource non trouvéee. Véerifiez que l\'éeÃé©tablissement existe.';
+ _errorMessage = 'Ressource non trouvée. Vérifiez que l\'établissement existe.';
  } else {
- _errorMessage = 'Erreur lors du chargement: $errorMsg';
+ _errorMessage = 'Erreur lors du chargement: ${errorMsg.length > 100 ? errorMsg.substring(0, 100) + "..." : errorMsg}';
  }
  _isLoading = false;
  });
  }
  }
+ }
 
  Future<void> _onRefresh() async {
+ if (!mounted) return;
  await _loadData();
  }
 
@@ -161,8 +219,12 @@ class _AIPredictionPageIntegratedState extends State<AIPredictionPageIntegrated>
  ),
  const SizedBox(height: 24),
  ElevatedButton(
- onPressed: _loadData,
- child: const Text('Réeessayer'),
+ onPressed: () {
+ if (mounted) {
+ _loadData();
+ }
+ },
+ child: const Text('Réessayer'),
  ),
  ],
  ),

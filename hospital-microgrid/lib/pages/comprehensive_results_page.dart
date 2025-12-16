@@ -4,12 +4,14 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:hospital_microgrid/services/establishment_service.dart';
 import 'package:hospital_microgrid/services/ai_service.dart';
 import 'package:hospital_microgrid/main.dart';
+import 'package:hospital_microgrid/pages/welcome_page.dart';
 import 'package:hospital_microgrid/providers/theme_provider.dart';
 import 'package:hospital_microgrid/services/pdf_export_service.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:async';
 
 import 'package:hospital_microgrid/theme/medical_solar_colors.dart';
+import 'package:hospital_microgrid/widgets/help_tooltip.dart';
 
 class ComprehensiveResultsPage extends StatefulWidget {
   final int establishmentId;
@@ -109,7 +111,7 @@ class _ComprehensiveResultsPageState extends State<ComprehensiveResultsPage> wit
     }
   }
 
-  void _goToDashboard() {
+  void _goToProfile() {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
@@ -117,6 +119,16 @@ class _ComprehensiveResultsPageState extends State<ComprehensiveResultsPage> wit
           themeProvider: widget.themeProvider,
           initialIndex: 0,
         ),
+      ),
+      (route) => false,
+    );
+  }
+
+  void _logout() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const WelcomePage(),
       ),
       (route) => false,
     );
@@ -244,11 +256,15 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
               ),
             ),
             const SizedBox(width: 12),
-            Text(
-              'Resultats Complets',
-              style: GoogleFonts.inter(
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.5,
+            Expanded(
+              child: Text(
+                'Résultats Complets',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
           ],
@@ -281,8 +297,11 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
                 case 'share':
                   _shareResults();
                   break;
-                case 'dashboard':
-                  _goToDashboard();
+                case 'profile':
+                  _goToProfile();
+                  break;
+                case 'logout':
+                  _logout();
                   break;
               }
             },
@@ -309,12 +328,23 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
               ),
               const PopupMenuDivider(),
               PopupMenuItem(
-                value: 'dashboard',
+                value: 'profile',
                 child: Row(
                   children: [
-                    Icon(Icons.dashboard_rounded, size: 20, color: MedicalSolarColors.softGrey),
+                    Icon(Icons.person_rounded, size: 20, color: MedicalSolarColors.softGrey),
                     const SizedBox(width: 12),
-                    const Text('Retour Dashboard'),
+                    const Text('Profil'),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              PopupMenuItem(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout_rounded, size: 20, color: MedicalSolarColors.error),
+                    const SizedBox(width: 12),
+                    const Text('Déconnexion'),
                   ],
                 ),
               ),
@@ -503,10 +533,7 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
                 ? MedicalSolarColors.solarYellow
                 : MedicalSolarColors.error;
 
-    return Tooltip(
-      message: 'Score composite evaluant la qualite globale du projet de microgrid. Base sur 4 categories : Autonomie (40%), Economique (30%), Resilience (20%), Environnemental (10%).',
-      preferBelow: false,
-      child: Container(
+    return Container(
         padding: const EdgeInsets.all(36),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -578,14 +605,26 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
               ),
             ),
             const SizedBox(height: 24),
-            Text(
-              'Score Global',
-              style: GoogleFonts.inter(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: isDark ? Colors.white : MedicalSolarColors.softGrey,
-                letterSpacing: 0.8,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Score Global',
+                  style: GoogleFonts.inter(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? Colors.white : MedicalSolarColors.softGrey,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                HelpTooltip(
+                  message: 'Score composite evaluant la qualite globale du projet de microgrid. Base sur 4 categories : Autonomie (40%), Economique (30%), Resilience (20%), Environnemental (10%).',
+                  title: 'Score Global',
+                  iconSize: 18,
+                  iconColor: isDark ? Colors.white70 : Colors.grey[600],
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             Row(
@@ -653,15 +692,11 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
             ),
           ],
         ),
-      ),
     );
   }
 
   Widget _buildMetricCard(String title, String value, IconData icon, Color color, bool isDark, {String? tooltip}) {
-    return Tooltip(
-      message: tooltip ?? title,
-      preferBelow: false,
-      child: Container(
+    return Container(
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -719,16 +754,31 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
               child: Icon(icon, color: color, size: 32),
             ),
             const SizedBox(height: 18),
-            Text(
-              title,
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white.withOpacity(0.8) : MedicalSolarColors.softGrey.withOpacity(0.9),
-                letterSpacing: 0.3,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white.withOpacity(0.8) : MedicalSolarColors.softGrey.withOpacity(0.9),
+                      letterSpacing: 0.3,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (tooltip != null) ...[
+                  const SizedBox(width: 6),
+                  HelpTooltip(
+                    message: tooltip,
+                    title: title,
+                    iconSize: 16,
+                    iconColor: isDark ? Colors.white60 : Colors.grey[600],
+                  ),
+                ],
+              ],
             ),
             const SizedBox(height: 10),
             Text(
@@ -743,7 +793,6 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
             ),
           ],
         ),
-      ),
     );
   }
 
@@ -788,10 +837,7 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
         final score = (cat['score'] as num).toDouble();
         return Padding(
           padding: const EdgeInsets.only(bottom: 14),
-          child: Tooltip(
-            message: cat['tooltip'] as String,
-            preferBelow: false,
-            child: Container(
+          child: Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -831,13 +877,25 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          cat['name'] as String,
-                          style: GoogleFonts.inter(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: isDark ? Colors.white : MedicalSolarColors.softGrey,
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                cat['name'] as String,
+                                style: GoogleFonts.inter(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: isDark ? Colors.white : MedicalSolarColors.softGrey,
+                                ),
+                              ),
+                            ),
+                            HelpTooltip(
+                              message: cat['tooltip'] as String,
+                              title: cat['name'] as String,
+                              iconSize: 16,
+                              iconColor: isDark ? Colors.white60 : Colors.grey[600],
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -872,7 +930,6 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
                 ],
               ),
             ),
-          ),
         );
       }).toList(),
     );
@@ -1084,11 +1141,36 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
     final beforeMonthlyBill = (beforeAfter['beforeMonthlyBill'] ?? 0).toDouble();
     final afterMonthlyBill = (beforeAfter['afterMonthlyBill'] ?? 0).toDouble();
 
+    // Créer deux groupes de barres séparés pour une meilleure visibilité
     final groups = [
-      BarChartGroupData(x: 0, barRods: [
-        BarChartRodData(toY: beforeMonthlyBill, color: MedicalSolarColors.error.withOpacity(0.7)),
-        BarChartRodData(toY: afterMonthlyBill, color: MedicalSolarColors.solarGreen),
-      ]),
+      BarChartGroupData(
+        x: 0,
+        barRods: [
+          BarChartRodData(
+            toY: beforeMonthlyBill,
+            color: MedicalSolarColors.error.withOpacity(0.8),
+            width: 30,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(4),
+              topRight: Radius.circular(4),
+            ),
+          ),
+        ],
+      ),
+      BarChartGroupData(
+        x: 1,
+        barRods: [
+          BarChartRodData(
+            toY: afterMonthlyBill,
+            color: MedicalSolarColors.solarGreen.withOpacity(0.8),
+            width: 30,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(4),
+              topRight: Radius.circular(4),
+            ),
+          ),
+        ],
+      ),
     ];
 
     final title = isNew ? 'Comparaison Projeté' : 'Comparaison Avant/Après';
@@ -1096,10 +1178,7 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
         ? 'Comparaison de la facture mensuelle projetée sans microgrid (réseau uniquement) vs avec microgrid solaire. La différence représente les économies mensuelles estimées.'
         : 'Comparaison de la facture mensuelle avant et après l\'installation du microgrid solaire. La différence représente vos économies mensuelles.';
     
-    return Tooltip(
-      message: tooltipMessage,
-      preferBelow: false,
-      child: Container(
+    return Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -1145,23 +1224,41 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        title,
-                        style: GoogleFonts.inter(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          color: isDark ? Colors.white : MedicalSolarColors.softGrey,
-                          letterSpacing: 0.3,
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: GoogleFonts.inter(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: isDark ? Colors.white : MedicalSolarColors.softGrey,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                          ),
+                          HelpTooltip(
+                            message: tooltipMessage,
+                            title: title,
+                            iconSize: 18,
+                            iconColor: isDark ? Colors.white70 : Colors.grey[600],
+                          ),
+                        ],
                       ),
                       if (isNew)
-                        Text(
-                          'Projection avec et sans microgrid',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: isDark ? Colors.white70 : MedicalSolarColors.softGrey.withOpacity(0.7),
-                            fontStyle: FontStyle.italic,
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            'Projection avec et sans microgrid',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: isDark ? Colors.white70 : MedicalSolarColors.softGrey.withOpacity(0.7),
+                              fontStyle: FontStyle.italic,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ),
                     ],
@@ -1175,31 +1272,108 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
               child: BarChart(
                 BarChartData(
                   barGroups: groups,
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: (beforeMonthlyBill > afterMonthlyBill ? beforeMonthlyBill : afterMonthlyBill) * 1.2,
                   titlesData: FlTitlesData(
-                    leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: true)),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 50,
+                        getTitlesWidget: (value, meta) {
+                          if (value == meta.min || value == meta.max) {
+                            return const SizedBox.shrink();
+                          }
+                          final formattedValue = value >= 1000 
+                              ? '${(value / 1000).toStringAsFixed(0)}K'
+                              : value.toStringAsFixed(0);
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: Text(
+                              formattedValue,
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: isDark ? Colors.white70 : Colors.grey[700],
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          );
+                        },
+                        interval: (beforeMonthlyBill > afterMonthlyBill ? beforeMonthlyBill : afterMonthlyBill) / 5,
+                      ),
+                    ),
+                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        getTitlesWidget: (value, meta) => Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            'Facture Mensuelle',
-                            style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500),
-                          ),
-                        ),
+                        reservedSize: 50,
+                        getTitlesWidget: (value, meta) {
+                          if (value == 0) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                isNew ? 'Sans microgrid' : 'Avant',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark ? Colors.white70 : Colors.grey[700],
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            );
+                          } else if (value == 1) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                isNew ? 'Avec microgrid' : 'Après',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark ? Colors.white70 : Colors.grey[700],
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
                       ),
                     ),
                   ),
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
-                    horizontalInterval: 1000,
+                    horizontalInterval: (beforeMonthlyBill > afterMonthlyBill ? beforeMonthlyBill : afterMonthlyBill) / 5,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
                         color: isDark ? Colors.white.withOpacity(0.1) : Colors.grey.withOpacity(0.2),
                         strokeWidth: 1,
                       );
                     },
+                  ),
+                  barTouchData: BarTouchData(
+                    enabled: true,
+                    touchTooltipData: BarTouchTooltipData(
+                      tooltipRoundedRadius: 8,
+                      tooltipPadding: const EdgeInsets.all(8),
+                      tooltipMargin: 8,
+                      tooltipBgColor: isDark ? MedicalSolarColors.darkSurface : Colors.white,
+                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                        final value = rod.toY;
+                        final label = rodIndex == 0 
+                            ? (isNew ? 'Sans microgrid' : 'Avant')
+                            : (isNew ? 'Avec microgrid' : 'Après');
+                        return BarTooltipItem(
+                          '$label\n${value.toStringAsFixed(0)} DH',
+                          GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: rod.color,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -1208,27 +1382,31 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildLegendItem(
-                  isNew ? 'Sans microgrid' : 'Avant',
-                  Colors.red.shade400,
-                  isDark,
+                Flexible(
+                  child: _buildLegendItem(
+                    isNew ? 'Sans microgrid' : 'Avant',
+                    Colors.red.shade400,
+                    isDark,
+                  ),
                 ),
                 const SizedBox(width: 24),
-                _buildLegendItem(
-                  isNew ? 'Avec microgrid' : 'Après',
-                  MedicalSolarColors.solarGreen,
-                  isDark,
+                Flexible(
+                  child: _buildLegendItem(
+                    isNew ? 'Avec microgrid' : 'Après',
+                    MedicalSolarColors.solarGreen,
+                    isDark,
+                  ),
                 ),
               ],
             ),
           ],
         ),
-      ),
     );
   }
 
   Widget _buildLegendItem(String label, Color color, bool isDark) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: 16,
@@ -1239,12 +1417,16 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
           ),
         ),
         const SizedBox(width: 8),
-        Text(
-          label,
-          style: GoogleFonts.inter(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: isDark ? Colors.white70 : MedicalSolarColors.softGrey.withOpacity(0.8),
+        Flexible(
+          child: Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: isDark ? Colors.white70 : MedicalSolarColors.softGrey.withOpacity(0.8),
+            ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
         ),
       ],
@@ -1341,10 +1523,7 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
       return FlSpot((index + 1).toDouble(), annualSavings * (index + 1));
     });
 
-    return Tooltip(
-      message: 'Évolution des économies cumulées sur 20 ans. Cette courbe montre comment vos économies s\'accumulent année après année.',
-      preferBelow: false,
-      child: Container(
+    return Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -1383,14 +1562,25 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
                   child: const Icon(Icons.trending_up_rounded, color: MedicalSolarColors.solarGreen, size: 24),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  'Évolution Financière (20 ans)',
-                  style: GoogleFonts.inter(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: isDark ? Colors.white : MedicalSolarColors.softGrey,
-                    letterSpacing: 0.3,
+                Expanded(
+                  child: Text(
+                    'Évolution Financière (20 ans)',
+                    style: GoogleFonts.inter(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : MedicalSolarColors.softGrey,
+                      letterSpacing: 0.3,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
+                ),
+                const SizedBox(width: 8),
+                HelpTooltip(
+                  message: 'Évolution des économies cumulées sur 20 ans. Cette courbe montre comment vos économies s\'accumulent année après année.',
+                  title: 'Évolution Financière (20 ans)',
+                  iconSize: 18,
+                  iconColor: isDark ? Colors.white70 : Colors.grey[600],
                 ),
               ],
             ),
@@ -1421,9 +1611,66 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
                       ),
                     ),
                   ],
-                  titlesData: const FlTitlesData(
-                    leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
-                    bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 60,
+                        interval: _getFinancialChartInterval(spots),
+                        getTitlesWidget: (value, meta) {
+                          if (value >= 1000000) {
+                            return Text(
+                              '${(value / 1000000).toStringAsFixed(1)}M',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: isDark ? Colors.white70 : MedicalSolarColors.softGrey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            );
+                          } else if (value >= 1000) {
+                            return Text(
+                              '${(value / 1000).toStringAsFixed(0)}K',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: isDark ? Colors.white70 : MedicalSolarColors.softGrey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            );
+                          } else {
+                            return Text(
+                              value.toStringAsFixed(0),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: isDark ? Colors.white70 : MedicalSolarColors.softGrey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 30,
+                        interval: 5,
+                        getTitlesWidget: (value, meta) {
+                          if (value.toInt() % 5 == 0) {
+                            return Text(
+                              '${value.toInt()}',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: isDark ? Colors.white70 : MedicalSolarColors.softGrey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            );
+                          }
+                          return const Text('');
+                        },
+                      ),
+                    ),
+                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   ),
                   gridData: FlGridData(
                     show: true,
@@ -1440,7 +1687,6 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
             ),
           ],
         ),
-      ),
     );
   }
 
@@ -2735,6 +2981,23 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
           _buildInfoRow('Anomalies consommation faible', '${anomalies.statistics.lowConsumptionAnomalies}', isDark),
           _buildInfoRow('Anomalies PV', '${anomalies.statistics.pvMalfunctionAnomalies}', isDark),
           _buildInfoRow('Batterie faible', '${anomalies.statistics.batteryLowAnomalies}', isDark),
+          // Vérifier la cohérence : si total > somme des types, afficher un avertissement
+          if (anomalies.statistics.totalAnomalies > 
+              (anomalies.statistics.highConsumptionAnomalies + 
+               anomalies.statistics.lowConsumptionAnomalies + 
+               anomalies.statistics.pvMalfunctionAnomalies + 
+               anomalies.statistics.batteryLowAnomalies))
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'Note: Certaines anomalies n\'ont pas de type spécifique',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontStyle: FontStyle.italic,
+                  color: isDark ? Colors.white60 : MedicalSolarColors.softGrey.withOpacity(0.6),
+                ),
+              ),
+            ),
           _buildInfoRow('Score moyen', anomalies.statistics.averageAnomalyScore.toStringAsFixed(2), isDark),
         ],
       ),
@@ -2747,11 +3010,13 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: isDark ? Colors.white70 : MedicalSolarColors.softGrey.withOpacity(0.7),
+          Expanded(
+            child: Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                color: isDark ? Colors.white70 : MedicalSolarColors.softGrey.withOpacity(0.7),
+              ),
             ),
           ),
           Text(
@@ -2765,5 +3030,19 @@ Autonomie: ${autonomy.toStringAsFixed(1)}%
         ],
       ),
     );
+  }
+
+  double _getFinancialChartInterval(List<FlSpot> spots) {
+    if (spots.isEmpty) return 500000;
+    final maxValue = spots.map((s) => s.y).reduce((a, b) => a > b ? a : b);
+    if (maxValue >= 1000000) {
+      return 500000; // 0.5M
+    } else if (maxValue >= 500000) {
+      return 100000; // 100K
+    } else if (maxValue >= 100000) {
+      return 50000; // 50K
+    } else {
+      return 10000; // 10K
+    }
   }
 }

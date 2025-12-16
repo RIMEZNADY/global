@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hospital_microgrid/pages/establishments_list_page.dart';
-import 'package:hospital_microgrid/pages/ai_prediction.dart';
-import 'package:hospital_microgrid/pages/auto_learning.dart';
 import 'package:hospital_microgrid/pages/welcome_page.dart';
 import 'package:hospital_microgrid/providers/theme_provider.dart';
 import 'package:hospital_microgrid/theme/medical_solar_colors.dart';
@@ -177,20 +175,16 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
  List<Widget> get _pages => [
  EstablishmentsListPage(themeProvider: widget.themeProvider),
- const AIPredictionPage(),
- const AutoLearningPage(),
  ];
 
  List<String> get _pageTitles => [
- 'Mes Établissements',
- 'Prdictions IA',
- 'Apprentissage ML',
+ 'Profil',
  ];
 
  @override
  void initState() {
  super.initState();
- _selectedIndex = widget.initialIndex ?? 0; // Utiliser initialIndex si fourni, sinon 0 (Dashboard)
+ _selectedIndex = widget.initialIndex ?? 0; // Utiliser initialIndex si fourni, sinon 0 (Profil)
  _animationController = AnimationController(
  duration: const Duration(milliseconds: 300),
  vsync: this,
@@ -206,23 +200,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
  void dispose() {
  _animationController.dispose();
  super.dispose();
- }
-
- void _onItemTapped(int index) {
- if (index != _selectedIndex) {
- // Smooth animation for tab switching
- setState(() {
- _selectedIndex = index;
- _animationController.reset();
- _animationController.forward();
- });
- }
- }
-
- Color _getBackgroundColor(BuildContext context) {
- return Theme.of(context).brightness == Brightness.dark
- ? MedicalSolarColors.darkSurface
- : MedicalSolarColors.offWhite;
  }
 
  Color _getTextColor(BuildContext context) {
@@ -293,18 +270,50 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
  ),
  ],
  ),
- actions: [
- IconButton(
- icon: Icon(
- isDark ? Icons.light_mode : Icons.dark_mode,
- color: _getTextColor(context),
- ),
- onPressed: () {
- widget.themeProvider.toggleTheme();
- },
- tooltip: isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode',
- ),
- ],
+        actions: [
+          IconButton(
+            icon: Icon(
+              isDark ? Icons.light_mode : Icons.dark_mode,
+              color: _getTextColor(context),
+            ),
+            onPressed: () {
+              widget.themeProvider.toggleTheme();
+            },
+            tooltip: isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+          ),
+          PopupMenuButton<String>(
+            icon: Icon(
+              Icons.more_vert_rounded,
+              color: _getTextColor(context),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            onSelected: (value) {
+              if (value == 'logout') {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const WelcomePage(),
+                  ),
+                  (route) => false,
+                );
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout_rounded, size: 20, color: MedicalSolarColors.error),
+                    const SizedBox(width: 12),
+                    const Text('Déconnexion'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
  ),
  body: FadeTransition(
  opacity: _fadeAnimation,
@@ -332,54 +341,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
  ),
  ),
  ),
- bottomNavigationBar: Container(
- decoration: BoxDecoration(
- color: _getBackgroundColor(context),
- boxShadow: [
- BoxShadow(
- color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
- blurRadius: 10,
- offset: const Offset(0, -2),
- ),
- ],
- ),
- child: BottomNavigationBar(
- backgroundColor: Colors.transparent,
- selectedItemColor: MedicalSolarColors.medicalBlue,
- unselectedItemColor: isDark 
- ? Colors.white.withOpacity(0.5)
- : MedicalSolarColors.softGrey.withOpacity(0.5),
- currentIndex: _selectedIndex,
- onTap: _onItemTapped,
- type: BottomNavigationBarType.fixed,
- elevation: 0,
- selectedLabelStyle: const TextStyle(
- fontWeight: FontWeight.w600,
- fontSize: 12,
- ),
- unselectedLabelStyle: const TextStyle(
- fontWeight: FontWeight.normal,
- fontSize: 12,
- ),
- items: const [
- BottomNavigationBarItem(
- icon: Icon(Icons.dashboard_rounded),
- activeIcon: Icon(Icons.dashboard_rounded),
- label: 'Dashboard',
- ),
- BottomNavigationBarItem(
- icon: Icon(Icons.psychology_outlined),
- activeIcon: Icon(Icons.psychology),
- label: 'AI',
- ),
- BottomNavigationBarItem(
- icon: Icon(Icons.auto_awesome_outlined),
- activeIcon: Icon(Icons.auto_awesome),
- label: 'Learning',
- ),
- ],
- ),
- ),
+ // BottomNavigationBar supprimé car il n'y a qu'une seule page (Profil)
+ // Flutter exige au moins 2 items dans BottomNavigationBar
  );
  }
 }

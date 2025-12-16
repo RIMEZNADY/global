@@ -74,3 +74,5 @@ Write-Host "=== Tests terminés ===" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Note: Si les valeurs proviennent de Nominatim, elles seront les populations réelles."
 Write-Host "Sinon, ce sont des estimations basées sur la zone solaire et le type d'établissement."
+
+

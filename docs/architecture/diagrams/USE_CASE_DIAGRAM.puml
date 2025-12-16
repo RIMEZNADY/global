@@ -1,0 +1,76 @@
+@startuml SMART_MICROGRID_USE_CASES
+
+title Diagramme de Cas d'Utilisation - SMART MICROGRID
+
+left to right direction
+
+actor "Utilisateur" as User
+actor "Service IA" as AIService
+
+package "Authentification" {
+  usecase "S'inscrire" as UC_Register
+  usecase "Se connecter" as UC_Login
+  usecase "Gérer son profil" as UC_ManageProfile
+}
+
+package "Gestion des Établissements" {
+  usecase "Créer un établissement" as UC_CreateEstablishment
+  usecase "Lister ses établissements" as UC_ListEstablishments
+  usecase "Consulter un établissement" as UC_ViewEstablishment
+  usecase "Modifier un établissement" as UC_EditEstablishment
+  usecase "Supprimer un établissement" as UC_DeleteEstablishment
+}
+
+package "Workflow EXISTANT" {
+  usecase "Saisir données établissement existant" as UC_ExistingWorkflow
+  usecase "Sélectionner équipements" as UC_SelectEquipment
+}
+
+package "Workflow NEW" {
+  usecase "Définir nouveau projet" as UC_NewWorkflow
+}
+
+package "Résultats et Analyses" {
+  usecase "Consulter résultats complets" as UC_ComprehensiveResults
+  usecase "Voir prédictions IA" as UC_AIPredictions
+  usecase "Simuler scénarios What-If" as UC_WhatIf
+  usecase "Exporter/Partager résultats" as UC_ExportShare
+}
+
+' Relations Utilisateur
+User --> UC_Register
+User --> UC_Login
+User --> UC_ManageProfile
+
+User --> UC_CreateEstablishment
+User --> UC_ListEstablishments
+User --> UC_ViewEstablishment
+User --> UC_EditEstablishment
+User --> UC_DeleteEstablishment
+
+User --> UC_ExistingWorkflow
+User --> UC_NewWorkflow
+User --> UC_SelectEquipment
+
+User --> UC_ComprehensiveResults
+User --> UC_AIPredictions
+User --> UC_WhatIf
+User --> UC_ExportShare
+
+' Relations d'inclusion
+UC_CreateEstablishment ..> UC_ExistingWorkflow : <<include>>
+UC_CreateEstablishment ..> UC_NewWorkflow : <<include>>
+
+UC_ExistingWorkflow ..> UC_SelectEquipment : <<include>>
+UC_NewWorkflow ..> UC_SelectEquipment : <<include>>
+
+UC_SelectEquipment ..> UC_ComprehensiveResults : <<include>>
+
+UC_ComprehensiveResults ..> UC_AIPredictions : <<extend>>
+UC_ComprehensiveResults ..> UC_WhatIf : <<extend>>
+
+UC_AIPredictions ..> AIService : <<uses>>
+
+@enduml
+
+

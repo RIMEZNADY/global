@@ -137,3 +137,5 @@ public class NominatimResponseTest {
         assertEquals("Town", response.getCityName());
     }
 }
+
+

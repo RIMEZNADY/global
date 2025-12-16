@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hospital_microgrid/services/ai_service.dart';
 import 'package:hospital_microgrid/theme/semantic_colors.dart';
 import 'package:hospital_microgrid/theme/medical_solar_colors.dart';
+import 'package:hospital_microgrid/widgets/help_tooltip.dart';
 
 class AutoLearningPage extends StatefulWidget {
  const AutoLearningPage({super.key});
@@ -329,13 +330,11 @@ class _AutoLearningPageState extends State<AutoLearningPage> {
  mainAxisAlignment: MainAxisAlignment.spaceBetween,
  children: [
  Icon(icon, color: Colors.white, size: 32),
- Tooltip(
+ HelpTooltip(
  message: explanation,
- child: const Icon(
- Icons.info_outline,
- color: Colors.white70,
- size: 20,
- ),
+ title: label,
+ iconSize: 18,
+ iconColor: Colors.white70,
  ),
  ],
  ),
@@ -349,13 +348,27 @@ class _AutoLearningPageState extends State<AutoLearningPage> {
  ),
  ),
  const SizedBox(height: 4),
- Text(
+ Row(
+ children: [
+ Expanded(
+ child: Text(
  label,
  style: GoogleFonts.inter(
  fontSize: 14,
  fontWeight: FontWeight.w500,
  color: Colors.white.withOpacity(0.9),
  ),
+ overflow: TextOverflow.ellipsis,
+ maxLines: 1,
+ ),
+ ),
+ HelpTooltip(
+ message: explanation,
+ title: label,
+ iconSize: 16,
+ iconColor: Colors.white70,
+ ),
+ ],
  ),
  ],
  ),

@@ -47,19 +47,6 @@ class InstitutionChoicePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 60),
-                  // Question Text
-                  Text(
-                    'are you here to :',
-                    style: GoogleFonts.inter(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                      color: isDark
-                          ? Colors.white
-                          : MedicalSolarColors.softGrey,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 48),
                   // EXISTANT Button
                   _buildChoiceButton(
                     context: context,

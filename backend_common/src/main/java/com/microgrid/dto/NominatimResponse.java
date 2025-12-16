@@ -84,3 +84,5 @@ public class NominatimResponse {
         return null;
     }
 }
+
+

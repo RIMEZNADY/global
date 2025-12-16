@@ -96,3 +96,5 @@ Pour chaque type, générer des variantes avec :
 
 
 
+
+

@@ -1,0 +1,68 @@
+@startuml SMART_MICROGRID_CLASS_DIAGRAM
+
+title Diagramme de Classes - SMART MICROGRID
+
+' Entités
+class User {
+  -id
+  -email
+  -password
+  -firstName
+  -lastName
+}
+
+class Establishment {
+  -id
+  -name
+  -type
+  -latitude
+  -longitude
+  -monthlyConsumptionKwh
+}
+
+' Repositories
+interface UserRepository
+interface EstablishmentRepository
+
+' Services
+class AuthService
+class EstablishmentService
+class ComprehensiveResultsService
+class CalculationServices {
+  SizingService
+  SimulationService
+  PvCalculationService
+}
+class AIServices {
+  MlRecommendationService
+  PredictionService
+  AnomalyDetectionService
+}
+class LocationService
+class AiMicroserviceClient
+
+' Controllers
+class AuthController
+class EstablishmentController
+class LocationController
+
+' Relations principales
+User "1" *-- "many" Establishment
+UserRepository ..> User
+EstablishmentRepository ..> Establishment
+
+AuthController --> AuthService
+AuthController --> UserRepository
+EstablishmentController --> EstablishmentService
+EstablishmentController --> ComprehensiveResultsService
+LocationController --> LocationService
+
+EstablishmentService --> EstablishmentRepository
+ComprehensiveResultsService --> CalculationServices
+ComprehensiveResultsService --> AIServices
+AIServices --> AiMicroserviceClient
+LocationService --> AiMicroserviceClient
+
+@enduml
+
+

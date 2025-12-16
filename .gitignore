@@ -1,0 +1,74 @@
+# Build directories
+**/build/
+**/.dart_tool/
+**/android/app/build/
+**/android/build/
+**/ios/build/
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/App.framework
+
+# APK files
+*.apk
+*.aab
+
+# Large binary files
+*.so
+*.jar
+*.dex
+*.bin
+
+# IDE
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+target/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Chrome dev tools
+**/.dart_tool/chrome-device/
+

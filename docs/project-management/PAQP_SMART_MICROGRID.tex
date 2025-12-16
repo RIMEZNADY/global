@@ -1,0 +1,1419 @@
+\documentclass[12pt,a4paper]{report}
+
+% ---------------- PACKAGES ----------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{listings}
+\usepackage{verbatim}
+
+% ---------------- PAGE SETTINGS ----------------
+\geometry{margin=2.5cm}
+\setstretch{1.15}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{PAQP – SMART MICROGRID}
+\rhead{\thepage}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+}
+
+% ---------------- COLORS ----------------
+\definecolor{darkblue}{RGB}{0,51,102}
+\definecolor{lightblue}{RGB}{173,216,230}
+\definecolor{criticalred}{RGB}{255,0,0}
+\definecolor{highpriority}{RGB}{255,165,0}
+\definecolor{mediumpriority}{RGB}{255,255,0}
+\definecolor{lowpriority}{RGB}{0,255,0}
+
+% ---------------- TITLE STYLE ----------------
+\titleformat{\chapter}
+  {\normalfont\Huge\bfseries\color{darkblue}}
+  {\thechapter.}{20pt}{}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{darkblue}}
+  {\thesection}{12pt}{}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}
+  {\thesubsection}{10pt}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries}
+  {\thesubsubsection}{8pt}{}
+
+% ---------------- CUSTOM COMMANDS ----------------
+\newcommand{\status}[1]{\textcolor{blue}{\textbf{#1}}}
+\newcommand{\critical}[1]{\textcolor{criticalred}{\textbf{#1}}}
+\newcommand{\high}[1]{\textcolor{highpriority}{\textbf{#1}}}
+
+% ---------------- DOCUMENT ----------------
+\begin{document}
+
+% ---------- PAGE DE GARDE ----------
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    % Logo EMSI (remplacer par votre logo si disponible)
+    % \includegraphics[width=0.3\textwidth]{logo_emsi.png}\\[1cm]
+    
+    {\Huge \textbf{PLAN D'ASSURANCE QUALITÉ PROJET}}\\[1cm]
+    {\LARGE \textbf{(PAQP)}}\\[1.5cm]
+    {\Large \textbf{SMART MICROGRID}}\\[0.5cm]
+    {\large Plateforme de Gestion et d'Optimisation de Microgrids Solaires}\\
+    {\large pour Établissements Médicaux}\\[2cm]
+
+    \begin{flushleft}
+    \textbf{Version :} 1.0\\
+    \textbf{État :} Validé\\
+    \textbf{Date :} \today\\[1cm]
+    
+    \textbf{Équipe projet (MOE - Maîtrise d'Œuvre) :}\\
+    \begin{tabular}{ll}
+    Chef de Projet (CdP) & : À compléter\\
+    Responsable Qualité (RQ) & : À compléter\\
+    Responsable Technique (RT) & : À compléter\\
+    Responsable Backend & : À compléter\\
+    Responsable Frontend Flutter & : À compléter\\
+    \end{tabular}\\[0.5cm]
+    
+    \textit{\small Note : Ce PAQP étant rédigé avant le début du développement, les noms des membres seront complétés lors de la constitution de l'équipe.}\\[0.5cm]
+
+    \textbf{Encadrant (MOA - Maîtrise d'Ouvrage) :} À compléter\\[0.5cm]
+    \textbf{Établissement :} EMSI - École Marocaine des Sciences de l'Ingénieur\\
+    \textbf{Module :} Management de Qualité\\
+    \textbf{Année universitaire :} 2024–2025
+    \end{flushleft}
+
+    \vfill
+\end{titlepage}
+
+% ---------- HISTORIQUE DES VERSIONS ----------
+\chapter*{Historique des versions}
+\addcontentsline{toc}{chapter}{Historique des versions}
+
+\begin{longtable}{|p{2cm}|p{3cm}|p{6cm}|p{2.5cm}|p{2cm}|}
+\hline
+\rowcolor{lightblue}
+\textbf{Version} & \textbf{Date} & \textbf{Nature de la modification} & \textbf{Réalisé par} & \textbf{État} \\
+\hline
+\endfirsthead
+
+\hline
+\rowcolor{lightblue}
+\textbf{Version} & \textbf{Date} & \textbf{Nature de la modification} & \textbf{Réalisé par} & \textbf{État} \\
+\hline
+\endhead
+
+0.1 & 02/12/2025 & Création initiale du PAQP & RQ & Brouillon \\
+\hline
+0.2 & 06/12/2025 & Ajout organisation projet et méthodologie Agile & RQ & En révision \\
+\hline
+0.3 & 08/12/2025 & Ajout stratégie de tests et gestion des risques & RQ & En révision \\
+\hline
+1.0 & 15/12/2025 & Version finale validée du PAQP & RQ & Validée CdP \\
+\hline
+\end{longtable}
+
+% ---------- TABLEAU DE VALIDATION ----------
+\chapter*{Validation du document}
+\addcontentsline{toc}{chapter}{Validation du document}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{4cm}|p{3cm}|p{3cm}|p{3cm}|p{2cm}|}
+\hline
+\rowcolor{lightblue}
+\textbf{Rôle} & \textbf{Nom} & \textbf{Date} & \textbf{Signature} & \textbf{Statut} \\
+\hline
+Responsable Qualité (RQ) & À compléter & & & $\square$ Vérifié \\
+\hline
+Chef de Projet (CdP) & À compléter & & & $\square$ Validé \\
+\hline
+Responsable Technique (RT) & À compléter & & & $\square$ Approuvé \\
+\hline
+Encadrant (MOA) & À compléter & & & $\square$ Approuvé \\
+\hline
+\end{tabular}
+\end{table}
+
+% ---------- TABLE DES MATIÈRES ----------
+\tableofcontents
+\listoftables
+\newpage
+
+% ========================================
+% CHAPITRE 1 : PRÉSENTATION GÉNÉRALE
+% ========================================
+\chapter{Présentation générale}
+
+\section{Objet et portée du document}
+
+\subsection{Objectif du PAQP}
+Le présent Plan d'Assurance Qualité Projet (PAQP) définit l'ensemble des dispositions et moyens mis en œuvre pour garantir la qualité du projet \textbf{SMART MICROGRID} tout au long de son cycle de vie, de la conception à la livraison finale.
+
+Ce document constitue le référentiel qualité du projet et s'applique à tous les membres de l'équipe ainsi qu'aux livrables produits.
+
+\textbf{Note importante :} Ce PAQP est rédigé \textbf{avant le début du développement} (phase de planification). Les rôles et responsabilités sont définis, mais les noms des membres de l'équipe (MOE) et de l'encadrant (MOA) seront complétés lors de la constitution effective de l'équipe et de la validation du document.
+
+\subsection{Périmètre d'application}
+Le PAQP s'applique à :
+\begin{itemize}[leftmargin=*]
+    \item Tous les processus de développement (spécification, conception, développement, tests)
+    \item Tous les modules techniques : Frontend Flutter, Backend Spring Boot, AI Microservice FastAPI, Base de données PostgreSQL
+    \item Toute la documentation projet (technique, gestion, utilisateur)
+    \item Tous les membres de l'équipe projet (5 membres)
+\end{itemize}
+
+\section{Contexte du projet}
+
+\subsection{Présentation SMART MICROGRID}
+SMART MICROGRID est une plateforme complète de gestion et d'optimisation de microgrids solaires pour établissements médicaux au Maroc. Elle permet de dimensionner, simuler, analyser et optimiser des installations photovoltaïques avec stockage, en fournissant des analyses financières, environnementales et techniques détaillées, enrichies par l'intelligence artificielle.
+
+Le projet propose deux workflows principaux :
+
+\textbf{Workflow EXISTANT :} Pour établissements déjà en place
+\begin{itemize}[leftmargin=*]
+    \item Collecte des données existantes (consommation, équipements)
+    \item Analyse de la situation actuelle
+    \item Recommandations d'amélioration
+    \item 5 formulaires de saisie (FormA1 à FormA5)
+\end{itemize}
+
+\textbf{Workflow NEW :} Pour nouveaux projets
+\begin{itemize}[leftmargin=*]
+    \item Dimensionnement depuis zéro
+    \item Optimisation selon contraintes (budget, surface)
+    \item Recommandations personnalisées
+    \item 4 formulaires de saisie (FormB1 à FormB4)
+\end{itemize}
+
+\subsection{Architecture technique}
+Le projet repose sur une architecture en 3 couches :
+
+\begin{figure}[h]
+\centering
+\begin{verbatim}
+┌─────────────────────────────────────────────┐
+│     COUCHE PRÉSENTATION                     │
+│     Frontend Flutter (Mobile/Web)           │
+│     - Pages, Widgets, Navigation            │
+│     - Graphiques (fl_chart)                 │
+│     - Géolocalisation (flutter_map)         │
+└──────────────────┬──────────────────────────┘
+                   │
+                   │ HTTP/REST API
+                   │ JWT Authentication
+                   │
+┌──────────────────▼──────────────────────────┐
+│     COUCHE MÉTIER                           │
+│     Backend Spring Boot (Java)              │
+│     - Controllers REST                      │
+│     - Services métier                       │
+│     - Repositories JPA                      │
+│     - Sécurité JWT                          │
+└──────────────────┬──────────────────────────┘
+                   │
+                   │ HTTP/REST API (Interne)
+                   │
+┌──────────────────▼──────────────────────────┐
+│     COUCHE INTELLIGENCE ARTIFICIELLE        │
+│     AI Microservice FastAPI (Python)        │
+│     - Modèles ML (XGBoost, RandomForest)    │
+│     - Prédictions                           │
+│     - Détection anomalies                   │
+└─────────────────────────────────────────────┘
+                   │
+                   │
+┌──────────────────▼──────────────────────────┐
+│     BASE DE DONNÉES                         │
+│     PostgreSQL 12+                          │
+│     - Utilisateurs                          │
+│     - Établissements                        │
+└─────────────────────────────────────────────┘
+\end{verbatim}
+\caption{Architecture 3-tiers SMART MICROGRID}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\rowcolor{lightblue}
+\textbf{Couche} & \textbf{Technologie} & \textbf{Responsable} \\
+\hline
+Frontend & Flutter 3.0+ (Dart) & Frontend Flutter \\
+\hline
+Backend & Spring Boot 3.2.0 (Java 17+) & Backend \\
+\hline
+AI Microservice & FastAPI 0.115.2 (Python 3.8+) & Backend/IA \\
+\hline
+Base de données & PostgreSQL 12+ & Backend \\
+\hline
+\end{tabular}
+\caption{Stack technologique SMART MICROGRID}
+\end{table}
+
+\subsection{Diagramme de flux - Workflows}
+
+\textbf{Workflow EXISTANT :}
+\begin{verbatim}
+Login → EstablishmentsListPage → InstitutionChoicePage (EXISTANT)
+  → FormA1Page → FormA2Page → FormA5Page
+  → ComprehensiveResultsPage (7 onglets)
+\end{verbatim}
+
+\textbf{Workflow NEW :}
+\begin{verbatim}
+Login → EstablishmentsListPage → InstitutionChoicePage (NEW)
+  → FormB1Page → FormB2Page → FormB4Page
+  → ComprehensiveResultsPage (7 onglets)
+\end{verbatim}
+
+\section{Maîtrise d'Ouvrage (MOA) et Maîtrise d'Œuvre (MOE)}
+
+\subsection{Définition des rôles}
+
+\textbf{MOA - Maîtrise d'Ouvrage :}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Définition} : Le client, celui qui commande le projet
+    \item \textbf{Rôle dans le projet} : L'encadrant académique
+    \item \textbf{Responsabilités} :
+    \begin{itemize}
+        \item Exprimer les besoins fonctionnels
+        \item Valider les spécifications (DSF)
+        \item Valider l'architecture (DAC)
+        \item Accepter les livraisons
+        \item Valider le PAQP
+        \item Gérer les priorités et arbitrer en cas de conflit
+    \end{itemize}
+\end{itemize}
+
+\textbf{MOE - Maîtrise d'Œuvre :}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Définition} : L'équipe qui réalise le projet
+    \item \textbf{Rôle dans le projet} : L'équipe de 5 membres étudiants
+    \item \textbf{Responsabilités} :
+    \begin{itemize}
+        \item Analyser les besoins exprimés par la MOA
+        \item Concevoir l'architecture technique
+        \item Développer le code (Frontend, Backend, IA)
+        \item Tester et valider les fonctionnalités
+        \item Produire la documentation (technique, utilisateur)
+        \item Livrer le produit final conforme aux exigences
+    \end{itemize}
+\end{itemize}
+
+\subsection{Relation MOA ↔ MOE}
+
+\begin{verbatim}
+MOA (Encadrant académique)
+    ↓
+    Exprime besoins fonctionnels
+    Valide spécifications (DSF)
+    ↓
+MOE (Équipe de 5 membres)
+    ↓
+    Analyse besoins
+    Conçoit architecture (DAC)
+    Développe solution
+    Teste et valide
+    ↓
+    Livre produit final
+    ↓
+MOA (Accepte produit)
+\end{verbatim}
+
+\subsection{Communication MOA/MOE}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Points de contact} : Réunions de suivi, Sprint Reviews
+    \item \textbf{Fréquence} : Selon planning académique (points d'avancement)
+    \item \textbf{Canaux} : Réunions en présentiel, emails, plateforme de suivi
+    \item \textbf{Validation} : MOA valide les livrables majeurs (DSF, DAC, PAQP, produit final)
+\end{itemize}
+
+\section{Terminologie et abréviations}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\rowcolor{lightblue}
+\textbf{Acronyme} & \textbf{Signification} \\
+\hline
+PAQP & Plan d'Assurance Qualité Projet \\
+\hline
+MOA & Maîtrise d'Ouvrage (Client/Encadrant) \\
+\hline
+MOE & Maîtrise d'Œuvre (Équipe de développement) \\
+\hline
+CdP & Chef de Projet \\
+\hline
+RQ & Responsable Qualité \\
+\hline
+RT & Responsable Technique \\
+\hline
+JWT & JSON Web Token (Authentification) \\
+\hline
+REST & Representational State Transfer \\
+\hline
+API & Application Programming Interface \\
+\hline
+ML & Machine Learning \\
+\hline
+CI/CD & Continuous Integration / Continuous Deployment \\
+\hline
+DoD & Definition of Done \\
+\hline
+US & User Story \\
+\hline
+\end{tabular}
+\caption{Acronymes principaux}
+\end{table}
+
+% ========================================
+% CHAPITRE 2 : ORGANISATION DU PROJET
+% ========================================
+\chapter{Organisation du projet}
+
+\section{Structure organisationnelle}
+
+\subsection{Équipe projet}
+L'équipe SMART MICROGRID est composée de \textbf{5 membres} avec les rôles suivants :
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\rowcolor{lightblue}
+\textbf{Rôle} & \textbf{Responsabilités principales} \\
+\hline
+Chef de Projet (CdP) & Pilotage projet, planning, coordination équipe \\
+\hline
+Responsable Qualité (RQ) & PAQP, audits, tests, métriques qualité \\
+\hline
+Responsable Technique (RT) & Architecture, standards, code review \\
+\hline
+Responsable Backend & Spring Boot, PostgreSQL, API REST \\
+\hline
+Responsable Frontend & Flutter, UI/UX, intégration API \\
+\hline
+\end{tabular}
+\caption{Rôles et responsabilités}
+\end{table}
+
+\section{Matrice RACI}
+
+\begin{longtable}{|p{4cm}|c|c|c|c|c|}
+\hline
+\rowcolor{lightblue}
+\textbf{Activité/Livrable} & \textbf{CdP} & \textbf{RQ} & \textbf{RT} & \textbf{Back} & \textbf{Front} \\
+\hline
+PAQP & A & R & C & I & I \\
+\hline
+Architecture & A & C & R & C & C \\
+\hline
+Code Backend & C & C & A & R & I \\
+\hline
+Code Frontend & C & C & A & I & R \\
+\hline
+Tests unitaires & C & A & C & R & R \\
+\hline
+Tests intégration & C & A & R & C & C \\
+\hline
+Documentation & A & C & I & C & C \\
+\hline
+\end{longtable}
+
+% ========================================
+% CHAPITRE 3 : PROCESSUS DE DÉVELOPPEMENT
+% ========================================
+\chapter{Processus de développement}
+
+\section{Méthodologie Agile}
+
+\subsection{Organisation des sprints}
+
+\textbf{Calendrier projet :}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Début projet} : 23/11/2025
+    \item \textbf{Livraison PAQP} : 15/12/2025
+    \item \textbf{Soutenance Flutter} : 16/12/2025
+    \item \textbf{Soutenance J2EE (Backend)} : 19/12/2025
+    \item \textbf{Rapports qualité} : Avant 23/12/2025
+\end{itemize}
+
+\textbf{Planning des sprints :}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|l|l|p{6cm}|}
+\hline
+\rowcolor{lightblue}
+\textbf{Sprint} & \textbf{Dates} & \textbf{Durée} & \textbf{Objectifs principaux} \\
+\hline
+Sprint 1 & 23/11 - 06/12/2025 & 2 sem. & Spécifications, architecture, setup \\
+\hline
+Sprint 2 & 07/12 - 13/12/2025 & 1 sem. & Développement core, intégration \\
+\hline
+Sprint 3 & 14/12 - 15/12/2025 & 2 jours & Finalisation PAQP, préparation soutenances \\
+\hline
+Sprint 4 & 16/12 - 19/12/2025 & 4 jours & Corrections post-soutenances, tests \\
+\hline
+Sprint 5 & 20/12 - 23/12/2025 & 4 jours & Rapports qualité, documentation finale \\
+\hline
+\end{tabular}
+\caption{Planning des sprints SMART MICROGRID}
+\end{table}
+
+\textbf{Rituels Agile :}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Sprint Planning} : En début de sprint
+    \item \textbf{Daily Stand-up} : 3 fois/semaine (15 min)
+    \item \textbf{Sprint Review} : Fin de sprint (1h30)
+    \item \textbf{Retrospective} : Fin de sprint (1h)
+\end{itemize}
+
+\subsection{Definition of Done (DoD)}
+\critical{Pour qu'une User Story soit "Done", TOUS les critères suivants doivent être satisfaits :}
+
+\begin{enumerate}[leftmargin=*]
+    \item ✅ Code développé et commenté
+    \item ✅ Tests unitaires écrits et passants (couverture ≥ 60-70\% modules critiques, 40-50\% autres)
+    \item ✅ Code review effectuée et validée
+    \item ✅ Documentation technique mise à jour
+    \item ✅ Aucun bug bloquant
+    \item ✅ Code mergé sur branche \texttt{develop}
+    \item ✅ Validation fonctionnelle
+\end{enumerate}
+
+\section{Gestion de configuration}
+
+\subsection{Stratégie Git Flow}
+\begin{verbatim}
+main ← Production
+  ↑
+develop ← Intégration
+  ↑
+  +--- feature/* ← Fonctionnalités
+  +--- bugfix/* ← Corrections
+\end{verbatim}
+
+% ========================================
+% CHAPITRE 4 : DOCUMENTATION
+% ========================================
+\chapter{Documentation}
+
+\section{Liste des documents projet}
+
+\begin{longtable}{|p{6cm}|p{2cm}|p{3cm}|p{3cm}|}
+\hline
+\rowcolor{lightblue}
+\textbf{Document} & \textbf{Version} & \textbf{Responsable} & \textbf{État} \\
+\hline
+PAQP & v1.0 & RQ & ✅ Validé (15/12/2025) \\
+\hline
+DSF (Spécifications) & v1.0 & Équipe & ⏳ Sprint 1 \\
+\hline
+DAC (Architecture) & v1.0 & RT & ⏳ Sprint 1-2 \\
+\hline
+DTL (Tests) & v1.0 & RQ & ⏳ Avant 23/12/2025 \\
+\hline
+Manuel Utilisateur & v1.0 & Frontend & ⏳ Sprint 5 \\
+\hline
+Rapport SonarQube & v1.0 & RT & ⏳ Avant 23/12/2025 \\
+\hline
+Rapport Tests (Selenium, JMeter) & v1.0 & RQ & ⏳ Avant 23/12/2025 \\
+\hline
+\end{longtable}
+
+% ========================================
+% CHAPITRE 5 : GESTION DES EXIGENCES
+% ========================================
+\chapter{Gestion des exigences}
+
+\section{Traçabilité des exigences}
+
+\begin{longtable}{|p{2cm}|p{4cm}|c|p{2cm}|p{2.5cm}|c|}
+\hline
+\rowcolor{lightblue}
+\textbf{ID} & \textbf{Description} & \textbf{Prio.} & \textbf{Module} & \textbf{Tests} & \textbf{État} \\
+\hline
+REQ-AUTH-01 & Authentification JWT & Must & Backend & TS-001 & ✅ \\
+\hline
+REQ-CAS1-01 & Workflow EXISTANT & Must & Frontend+Backend & TS-010 & ✅ \\
+\hline
+REQ-CAS2-01 & Workflow NEW & Must & Frontend+Backend & TS-020 & ✅ \\
+\hline
+REQ-RESULTS-01 & 7 onglets résultats & Must & Frontend+Backend & TS-030 & ✅ \\
+\hline
+REQ-IA-01 & Prédictions IA & Should & AI Microservice & TS-040 & 🟡 \\
+\hline
+\end{longtable}
+
+% ========================================
+% CHAPITRE 6 : GESTION DES MODIFICATIONS
+% ========================================
+\chapter{Gestion des modifications}
+
+\section{Niveaux de priorité}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|p{3cm}|}
+\hline
+\rowcolor{lightblue}
+\textbf{Priorité} & \textbf{Définition} & \textbf{Délai cible} \\
+\hline
+🔴 Critique & Bloquant, empêche utilisation & < 24h \\
+\hline
+🟠 Haute & Impact majeur fonctionnalité clé & < 48h \\
+\hline
+🟡 Moyenne & Gêne utilisateur, contournement possible & < 1 semaine \\
+\hline
+🟢 Basse & Cosmétique, amélioration mineure & Backlog \\
+\hline
+\end{tabular}
+\caption{Niveaux de priorité}
+\end{table}
+
+\section{Processus de gestion des modifications}
+
+\subsection{Workflow détaillé}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Identification et création ticket}
+    
+    Découvreur crée issue GitLab avec template :
+    \begin{itemize}
+        \item Type : Bug / Enhancement / Feature / Refactoring / Doc
+        \item Priorité : 🔴 Critique / 🟠 Haute / 🟡 Moyenne / 🟢 Basse
+        \item Module : Backend / Frontend / IA / Transverse
+        \item Description détaillée du problème/besoin
+        \item Étapes de reproduction (si bug)
+        \item Impact sur le système
+    \end{itemize}
+    
+    \item \textbf{Triage et analyse d'impact}
+    
+    RQ examine avec RT :
+    \begin{itemize}
+        \item Validation priorité
+        \item Estimation charge (Story Points)
+        \item Identification modules impactés
+        \item Évaluation risques régression
+        \item Vérification duplication (issue similaire existante ?)
+    \end{itemize}
+    
+    \item \textbf{Priorisation et planification}
+    
+    CdP décide :
+    \begin{itemize}
+        \item Critique/Haute → Sprint en cours (interruption)
+        \item Moyenne → Prochain sprint
+        \item Basse → Product Backlog
+    \end{itemize}
+    
+    Attribution responsable développeur.
+    
+    \item \textbf{Implémentation}
+    
+    Développeur assigné :
+    \begin{itemize}
+        \item Crée branch \texttt{bugfix/*} ou \texttt{feature/*}
+        \item Développe correction/amélioration
+        \item Écrit/met à jour tests
+        \item Teste localement
+        \item Crée Merge Request
+    \end{itemize}
+    
+    \item \textbf{Code Review}
+    
+    RT + peer reviewer :
+    \begin{itemize}
+        \item Vérifient qualité code
+        \item Valident tests
+        \item Approuvent MR (2 approbations minimum)
+    \end{itemize}
+    
+    \item \textbf{Vérification qualité}
+    
+    RQ après merge :
+    \begin{itemize}
+        \item Vérifie correction effective
+        \item Lance tests non-régression
+        \item Valide fonctionnellement
+        \item Clôture ticket si OK
+    \end{itemize}
+    
+    \item \textbf{Documentation}
+    
+    Mise à jour si nécessaire :
+    \begin{itemize}
+        \item Changelog
+        \item Documentation technique
+        \item Manuel utilisateur (si impact UI)
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Formulaire de demande de modification}
+
+Toute demande de modification doit contenir :
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Type} : Bug / Enhancement / Feature / Refactoring / Doc
+    \item \textbf{Priorité} : Justification de la priorité
+    \item \textbf{Description} : Détail du problème ou besoin
+    \item \textbf{Impact} : Modules concernés, charge estimée
+    \item \textbf{Justification} : Pourquoi cette modification est nécessaire
+    \item \textbf{Proposé par} : Nom du demandeur
+    \item \textbf{Date} : Date de la demande
+\end{itemize}
+
+% ========================================
+% CHAPITRE 7 : STRATÉGIE DE TESTS
+% ========================================
+\chapter{Stratégie de tests}
+
+\section{Objectifs qualité}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\rowcolor{lightblue}
+\textbf{Critère} & \textbf{Objectif} \\
+\hline
+Couverture code & ≥ 60-70\% modules critiques (Backend API, calculs IA), 40-50\% autres \\
+\hline
+Bugs critiques & 0 en production \\
+\hline
+Performance API & Temps réponse < 1s (95e percentile) pour 20-30 utilisateurs simultanés \\
+\hline
+Tests fonctionnels & 100\% User Stories Must validées \\
+\hline
+\end{tabular}
+\caption{Objectifs qualité SMART MICROGRID (réalistes pour projet étudiant)}
+\end{table}
+
+\section{Types de tests}
+
+\subsection{Tests unitaires}
+
+\textbf{Technologies :}
+\begin{itemize}[leftmargin=*]
+    \item Backend : JUnit 5, Mockito, AssertJ
+    \item Mobile : Flutter Test
+    \item IA : PyTest
+\end{itemize}
+
+\textbf{Couverture visée :} 
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Modules critiques} : ≥ 60-70\% (Backend API, calculs IA, services métier)
+    \item \textbf{Autres modules} : ≥ 40-50\% (UI, utilitaires)
+    \item \textbf{Priorisation} : Focus sur code métier critique, moins sur UI
+\end{itemize}
+
+\textbf{Responsables :} Chaque développeur sur son code
+
+\textbf{Fréquence :} À chaque commit (CI/CD automatique)
+
+\textbf{Justification réaliste :}
+Pour une équipe de 5 étudiants avec 3 technologies différentes (Java, Dart, Python), un objectif de 80\% sur tout le code est irréaliste. La priorisation sur les modules critiques garantit la qualité là où c'est le plus important.
+
+\subsection{Tests d'intégration}
+
+\textbf{Objectif :} Valider l'intégration entre modules/composants.
+
+\textbf{Scope :}
+\begin{itemize}[leftmargin=*]
+    \item APIs Backend REST (endpoints complets)
+    \item Base de données (requêtes complexes, transactions)
+    \item Intégration Mobile ↔ Backend
+    \item Intégration Backend ↔ IA/ML
+\end{itemize}
+
+\textbf{Outils :}
+\begin{itemize}[leftmargin=*]
+    \item Postman/Newman (APIs REST)
+    \item TestContainers (PostgreSQL isolé)
+    \item Integration tests Spring Boot
+\end{itemize}
+
+\textbf{Responsables :} RT + développeurs concernés
+
+\textbf{Fréquence :} Daily build (CI/CD)
+
+\subsection{Tests fonctionnels}
+
+\textbf{Objectif :} Valider conformité aux exigences métier.
+
+\textbf{Scope :}
+\begin{itemize}[leftmargin=*]
+    \item Scénarios complets Workflow EXISTANT
+    \item Scénarios complets Workflow NEW
+    \item Parcours utilisateurs end-to-end
+    \item 7 onglets de résultats
+\end{itemize}
+
+\textbf{Méthode :}
+\begin{itemize}[leftmargin=*]
+    \item Tests manuels guidés (checklists)
+    \item Tests automatisés si possible
+\end{itemize}
+
+\textbf{Responsables :} RQ + équipe complète
+
+\textbf{Fréquence :} Fin de chaque sprint
+
+\subsection{Tests non-fonctionnels}
+
+\textbf{Tests de performance}
+\begin{itemize}[leftmargin=*]
+    \item Outils : JMeter, Apache Bench
+    \item Charge : 20-30 utilisateurs simultanés (réaliste pour établissements médicaux)
+    \item Critère : Temps réponse < 1s (95e percentile)
+    \item Responsable : RT
+    \item \textbf{Justification} : Pour un projet étudiant ciblant des établissements médicaux (probablement < 50 utilisateurs réels), 20-30 users simultanés est un objectif réaliste et suffisant.
+\end{itemize}
+
+\textbf{Tests de sécurité}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Tests manuels} : Authentification/autorisation JWT, validation inputs
+    \item \textbf{Scan vulnérabilités} : Tests manuels injection SQL, XSS, CSRF
+    \item \textbf{Outils optionnels} : OWASP ZAP (si temps disponible)
+    \item Responsable : RT + Backend
+    \item \textbf{Justification} : Pour un projet étudiant, tests manuels de sécurité sont suffisants. OWASP ZAP peut être utilisé si temps disponible.
+\end{itemize}
+
+\textbf{Tests de compatibilité}
+\begin{itemize}[leftmargin=*]
+    \item Web : Chrome, Firefox, Safari, Edge
+    \item Mobile : iOS 14+, Android 10+
+    \item Responsive : Desktop, Tablet, Mobile
+    \item Responsables : Frontend
+\end{itemize}
+
+\textbf{Fréquence :} Sprint 5-6 (avant livraison)
+
+\subsection{Tests d'acceptance utilisateur (UAT)}
+
+\textbf{Objectif :} Validation finale par proxy client (encadrant).
+
+\textbf{Déroulement :}
+\begin{enumerate}[leftmargin=*]
+    \item Préparation scénarios réels d'utilisation
+    \item Démonstration encadrant
+    \item Collecte feedback
+    \item Corrections si nécessaire
+    \item Validation finale
+\end{enumerate}
+
+\textbf{Responsables :} CdP + RQ
+
+\textbf{Fréquence :} Sprint 6 final
+
+\section{Environnements de test}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\rowcolor{lightblue}
+\textbf{Environnement} & \textbf{Description} \\
+\hline
+DEV (Local) & Postes développeurs, tests locaux \\
+\hline
+INT (Integration) & Serveur intégration, Docker Compose, CI/CD \\
+\hline
+UAT (Pre-prod) & Environnement similaire production, tests acceptance \\
+\hline
+PROD (Production) & Production finale (si déploiement réel demandé) \\
+\hline
+\end{tabular}
+\caption{Environnements de test}
+\end{table}
+
+\section{Stratégie d'automatisation}
+
+\subsection{Pipeline CI/CD - MVP Réaliste}
+
+\textbf{Objectif :} Mettre en place un CI/CD minimal mais fonctionnel pour un projet étudiant.
+
+\textbf{Workflow automatique (GitLab CI / GitHub Actions) :}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Commit} → Push code
+    \item \textbf{Build} → Compilation automatique (Backend, Frontend, IA)
+    \item \textbf{Tests unitaires} → Exécution suite tests
+    \item \textbf{Analyse code} → SonarQube (si disponible, sinon linters locaux)
+    \item \textbf{Notification} → Équipe (Slack/Email) en cas d'échec
+\end{enumerate}
+
+\textbf{Étapes optionnelles (si temps disponible) :}
+\begin{itemize}[leftmargin=*]
+    \item Tests intégration automatisés
+    \item Déploiement automatique environnement INT
+\end{itemize}
+
+\textbf{Configuration minimale :}
+\begin{verbatim}
+# .gitlab-ci.yml (exemple minimal)
+stages:
+  - build
+  - test
+
+build_backend:
+  stage: build
+  script:
+    - cd backend_common
+    - mvn clean package
+
+test_backend:
+  stage: test
+  script:
+    - cd backend_common
+    - mvn test
+\end{verbatim}
+
+\textbf{Responsable :} RT
+
+\textbf{Date de mise en place :} Sprint 1-2
+
+\subsection{Critères entrée/sortie}
+
+\textbf{Critères d'entrée (tests autorisés si) :}
+\begin{itemize}[leftmargin=*]
+    \item Code compilé sans erreurs
+    \item Tests unitaires > 60\% couverture (modules critiques)
+    \item Code review validé
+    \item Documentation technique à jour
+\end{itemize}
+
+\textbf{Critères de sortie (release autorisée si) :}
+\begin{itemize}[leftmargin=*]
+    \item 100\% tests unitaires passés
+    \item 100\% tests intégration critiques passés
+    \item 100\% User Stories Must validées
+    \item 0 bug critique ouvert
+    \item < 5 bugs haute priorité ouverts
+    \item Performance validée (< 1s pour 20-30 users)
+    \item Documentation utilisateur complète
+\end{itemize}
+
+% ========================================
+% CHAPITRE 8 : MÉTRIQUES ET INDICATEURS
+% ========================================
+\chapter{Métriques et indicateurs qualité}
+
+\section{Indicateurs de processus Agile}
+
+\subsection{Vélocité}
+\textbf{Définition :} Story Points complétés par sprint.
+
+\textbf{Objectif :} Stabilisation après sprint 2 (vélocité prévisible).
+
+\subsection{Burndown Chart}
+\textbf{Définition :} Graphique travail restant vs temps sprint.
+
+\textbf{Utilité :} Visualiser avancement sprint jour par jour.
+
+\subsection{Taux de complétion sprint}
+\textbf{Formule :} (US Done / US planifiées) × 100
+
+\textbf{Objectif :} > 85\%
+
+\section{Indicateurs qualité code}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{6cm}|p{3cm}|}
+\hline
+\rowcolor{lightblue}
+\textbf{Métrique} & \textbf{Description} & \textbf{Objectif} \\
+\hline
+Couverture tests & \% code testé unitairement & ≥ 60-70\% (critiques), 40-50\% (autres) \\
+\hline
+Dette technique & Jours équivalents refactoring & < 5 jours \\
+\hline
+Complexité cyclo. & Moyenne par fonction & < 10 \\
+\hline
+Duplication code & \% lignes dupliquées & < 3\% \\
+\hline
+Violations SonarQube & Nombre bugs/vulnérabilités & 0 bloquant \\
+\hline
+\end{tabular}
+\caption{Métriques qualité code}
+\end{table}
+
+\section{Tableaux de bord qualité}
+
+\subsection{Dashboard hebdomadaire RQ}
+
+\textbf{Fréquence :} Chaque vendredi (fin de semaine)
+
+\textbf{Contenu :}
+\begin{itemize}[leftmargin=*]
+    \item Burndown chart sprint en cours
+    \item Bugs ouverts/fermés par priorité (graphique)
+    \item Couverture tests (évolution)
+    \item Dette technique
+    \item Respect DoD (US validées vs total)
+    \item Alertes (dépassements seuils)
+\end{itemize}
+
+\textbf{Outils :} Excel, GitLab Insights, ou tableau manuel
+
+\textbf{Responsable :} RQ
+
+\subsection{Dashboard mensuel CdP}
+
+\textbf{Fréquence :} Fin de chaque mois
+
+\textbf{Contenu :}
+\begin{itemize}[leftmargin=*]
+    \item Avancement global projet (\%)
+    \item Vélocité moyenne équipe
+    \item Risques actifs/mitigés
+    \item Livrables produits/validés
+    \item Écarts planning (Gantt)
+    \item Budget temps consommé
+\end{itemize}
+
+\textbf{Responsable :} CdP
+
+\section{Indicateurs bugs}
+
+\subsection{Densité de bugs}
+\textbf{Formule :} Nb bugs / 1000 lignes de code (KLOC)
+
+\textbf{Objectif :} < 2 bugs/KLOC
+
+\subsection{Taux de détection bugs}
+\textbf{Formule :} (Bugs trouvés avant prod / Total bugs) × 100
+
+\textbf{Objectif :} > 95\%
+
+\subsection{Délai moyen de correction}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\rowcolor{lightblue}
+\textbf{Priorité} & \textbf{Délai objectif} \\
+\hline
+🔴 Critique & < 24h \\
+\hline
+🟠 Haute & < 48h \\
+\hline
+🟡 Moyenne & < 1 semaine \\
+\hline
+🟢 Basse & Backlog (pas de contrainte) \\
+\hline
+\end{tabular}
+\caption{Délais de correction cibles}
+\end{table}
+
+% ========================================
+% CHAPITRE 9 : GESTION DES RISQUES
+% ========================================
+\chapter{Gestion des risques}
+
+\section{Matrice des risques}
+
+\begin{longtable}{|p{0.8cm}|p{3.5cm}|p{2cm}|p{1.5cm}|p{1.5cm}|p{1.2cm}|p{3cm}|}
+\hline
+\rowcolor{lightblue}
+\textbf{ID} & \textbf{Risque} & \textbf{Catégorie} & \textbf{Prob.} & \textbf{Impact} & \textbf{Crit.} & \textbf{Mitigation} \\
+\hline
+\endfirsthead
+
+\hline
+\rowcolor{lightblue}
+\textbf{ID} & \textbf{Risque} & \textbf{Catégorie} & \textbf{Prob.} & \textbf{Impact} & \textbf{Crit.} & \textbf{Mitigation} \\
+\hline
+\endhead
+
+R01 & Indispo. membre clé & Org. & Moy. & Élevé & 🟠 & Binômage, doc partagée \\
+\hline
+R02 & Complexité intégration IA & Tech. & Élevée & Élevé & 🔴 & POC sprint 1, fallback calculs simples \\
+\hline
+R03 & Performance API insuffisante & Tech. & Faible & Moy. & 🟡 & Tests charge S4, optim BD \\
+\hline
+R04 & Dérive planning & Gestion & Moy. & Moy. & 🟡 & Buffer 15\%, repriorisation \\
+\hline
+R05 & Exigences mal comprises & Fonct. & Faible & Élevé & 🟠 & Valid. fréquente encadrant \\
+\hline
+R06 & Bugs critiques pré-livraison & Qualité & Moy. & Élevé & 🟠 & Tests continus, S6 stabilisation \\
+\hline
+R07 & Perte données dév. & Tech. & Faible & Élevé & 🟠 & Git obligatoire, backup Drive \\
+\hline
+R08 & Compatibilité technos & Tech. & Moy. & Moy. & 🟡 & Tests intég. précoces \\
+\hline
+R09 & Manque compétences tech & Org. & Moy. & Moy. & 🟡 & Formations internes, tutos \\
+\hline
+R10 & Défaillance serveur INT & Tech. & Faible & Moy. & 🟢 & Backup local Docker \\
+\hline
+\end{longtable}
+
+\section{Stratégies de mitigation détaillées}
+
+\subsection{Plans de contingence}
+
+\textbf{R02 - Complexité intégration IA (Critique) :}
+
+\textbf{Prévention :}
+\begin{itemize}[leftmargin=*]
+    \item POC (Proof of Concept) dès Sprint 1 (pas Sprint 2)
+    \item Tests intégration Backend↔IA fréquents
+    \item Documentation API IA complète
+\end{itemize}
+
+\textbf{Détection :}
+\begin{itemize}[leftmargin=*]
+    \item Tests intégration quotidiens
+    \item Monitoring logs backend (erreurs connexion IA)
+\end{itemize}
+
+\textbf{Contingence :}
+\begin{itemize}[leftmargin=*]
+    \item Si POC échoue → Simplifier modèle ML ou passer en mode prédictions règles métier
+    \item Si microservice IA indisponible → Backend utilise calculs simples (fallback déjà implémenté)
+    \item Support externe : Forums Stack Overflow, documentation FastAPI, tutoriels Python ML
+\end{itemize}
+
+\textbf{Responsable :} RT + Responsable IA
+
+\textbf{R01 - Indisponibilité membre (Haute) :}
+
+\textbf{Prévention :}
+\begin{itemize}[leftmargin=*]
+    \item Binômage (2 personnes formées par module)
+    \item Documentation partagée systématique
+    \item Code review obligatoire (connaissance partagée)
+\end{itemize}
+
+\textbf{Contingence :}
+\begin{itemize}[leftmargin=*]
+    \item Réattribution tâches équipe
+    \item Priorisation fonctionnalités Must
+    \item Escalade encadrant si impact majeur
+\end{itemize}
+
+\textbf{Responsable :} CdP
+
+% ========================================
+% CHAPITRE 10 : REVUES ET AUDITS
+% ========================================
+\chapter{Revues et audits}
+
+\section{Types de revues}
+
+\subsection{Revues techniques}
+
+\textbf{Revue d'architecture (fin Sprint 2)}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Objectif} : Validation DAC v1.0
+    \item \textbf{Participants} : RT + tous développeurs
+    \item \textbf{Checklist} : Cohérence, scalabilité, sécurité, performance
+    \item \textbf{Responsable} : RT
+\end{itemize}
+
+\textbf{Code Review (continu)}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Objectif} : Qualité code, respect standards
+    \item \textbf{Process} : Merge Request → 2 approbations obligatoires
+    \item \textbf{Checklist} : Standards, tests, documentation, sécurité
+    \item \textbf{Responsables} : RT + peer reviewers
+\end{itemize}
+
+\subsection{Revues qualité}
+
+\textbf{Audit de sprint (fin chaque sprint)}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Objectif} : Vérification conformité DoD
+    \item \textbf{Activités} :
+    \begin{itemize}
+        \item Contrôle US "Done" (critères DoD complets ?)
+        \item Vérification livrables sprint
+        \item Audit tests (couverture, résultats)
+        \item Contrôle documentation
+    \end{itemize}
+    \item \textbf{Responsable} : RQ
+    \item \textbf{Livrable} : Rapport audit sprint
+\end{itemize}
+
+% ========================================
+% CHAPITRE 11 : OUTILS ET ENVIRONNEMENT
+% ========================================
+\chapter{Outils et environnement}
+
+\section{Outils de développement}
+
+\subsection{Backend (Spring Boot)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\rowcolor{lightblue}
+\textbf{Catégorie} & \textbf{Outil/Framework} \\
+\hline
+Framework & Spring Boot 3.2.0 (Java 17+) \\
+\hline
+ORM & Spring Data JPA, Hibernate \\
+\hline
+Base de données & PostgreSQL 12+ \\
+\hline
+Sécurité & Spring Security, JWT \\
+\hline
+Tests & JUnit 5, Mockito, TestContainers \\
+\hline
+Documentation API & Springdoc OpenAPI (Swagger UI) \\
+\hline
+Build & Maven \\
+\hline
+\end{tabular}
+\caption{Stack Backend}
+\end{table}
+
+\subsection{Mobile (Flutter)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\rowcolor{lightblue}
+\textbf{Catégorie} & \textbf{Outil/Framework} \\
+\hline
+Framework & Flutter 3.0+, Dart \\
+\hline
+State Management & Provider / ChangeNotifier \\
+\hline
+HTTP Client & http package \\
+\hline
+Graphiques & fl\_chart \\
+\hline
+Tests & Flutter Test \\
+\hline
+IDE & Android Studio, VS Code \\
+\hline
+Build & Flutter CLI \\
+\hline
+\end{tabular}
+\caption{Stack Mobile}
+\end{table}
+
+\subsection{IA/ML (Python)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\rowcolor{lightblue}
+\textbf{Catégorie} & \textbf{Outil/Framework} \\
+\hline
+Langage & Python 3.8+ \\
+\hline
+API Framework & FastAPI 0.115.2 \\
+\hline
+ML & scikit-learn, XGBoost \\
+\hline
+Data Processing & Pandas, NumPy \\
+\hline
+Tests & PyTest \\
+\hline
+\end{tabular}
+\caption{Stack IA/ML}
+\end{table}
+
+\section{Outils qualité et gestion}
+
+\subsection{Gestion de projet}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Planning} : Microsoft Project / GanttProject
+    \item \textbf{Backlog/Tickets} : GitLab Issues
+    \item \textbf{Communication} : WhatsApp / Slack / Discord
+    \item \textbf{Documentation} : Google Drive / OneDrive
+\end{itemize}
+
+\subsection{Versioning et CI/CD}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Git} : GitLab / GitHub
+    \item \textbf{CI/CD} : GitLab CI / GitHub Actions
+    \item \textbf{Conteneurisation} : Docker, Docker Compose
+\end{itemize}
+
+\subsection{Qualité code}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Analyse statique} : SonarQube / SonarCloud (si disponible)
+    \item \textbf{Linters} :
+    \begin{itemize}
+        \item Java : Checkstyle, PMD
+        \item Dart : Dart Analyzer
+        \item Python : Pylint, Flake8
+    \end{itemize}
+    \item \textbf{Coverage} : JaCoCo (Java), lcov (Dart), Coverage.py (Python)
+\end{itemize}
+
+\subsection{Tests}
+
+\textbf{Tests faisables pour projet étudiant :}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{APIs REST} : Postman (tests manuels), Newman (automation si temps)
+    \item \textbf{Performance} : JMeter (tests basiques 20-30 users)
+    \item \textbf{Sécurité} : Tests manuels authentification JWT, validation inputs
+    \item \textbf{E2E Web} : Tests manuels guidés (Selenium si temps disponible)
+\end{itemize}
+
+\textbf{Tests non prioritaires (si temps limité) :}
+\begin{itemize}[leftmargin=*]
+    \item Tests automatisés E2E complets
+    \item Tests de charge avancés (> 30 users)
+    \item Scans sécurité automatisés (OWASP ZAP)
+\end{itemize}
+
+% ========================================
+% CHAPITRE 12 : CONCLUSION
+% ========================================
+\chapter{Conclusion}
+
+\section{Synthèse}
+
+Ce Plan d'Assurance Qualité Projet (PAQP) définit le cadre complet garantissant la qualité du projet \textbf{SMART MICROGRID}. Il couvre :
+
+\begin{itemize}[leftmargin=*]
+    \item L'\textbf{organisation} de l'équipe avec rôles et responsabilités clairs
+    \item Le \textbf{processus Agile} adapté avec sprints organisés selon calendrier académique
+    \item Les \textbf{standards documentaires} et liste exhaustive des livrables
+    \item La \textbf{gestion des exigences} avec traçabilité complète
+    \item La \textbf{gestion des modifications} avec workflow détaillé
+    \item La \textbf{stratégie de tests} multiniveaux (unitaires, intégration, fonctionnels)
+    \item Les \textbf{métriques qualité} et tableaux de bord
+    \item La \textbf{gestion proactive des risques}
+    \item Les \textbf{revues et audits} systématiques
+    \item L'\textbf{environnement technique} complet
+\end{itemize}
+
+\section{Engagement qualité}
+
+L'équipe SMART MICROGRID s'engage à :
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Respecter scrupuleusement} toutes les dispositions du PAQP
+    \item \textbf{Appliquer la Definition of Done} (DoD) sans compromis
+    \item \textbf{Maintenir une couverture de tests} ≥ 60-70\% (modules critiques)
+    \item \textbf{Livrer un produit final} conforme aux exigences et sans bug critique
+    \item \textbf{Documenter exhaustivement} le projet (technique + utilisateur)
+    \item \textbf{Collaborer efficacement} en mode Agile
+    \item \textbf{Améliorer continuellement} nos processus (rétrospectives)
+\end{enumerate}
+
+% ========================================
+% ANNEXES
+% ========================================
+\appendix
+
+\chapter{Annexe A : Templates documents}
+
+\section{Template Compte-rendu réunion}
+
+\begin{verbatim}
+COMPTE-RENDU DE RÉUNION
+Projet : SMART MICROGRID
+Type : Sprint Planning / Daily / Review / Retrospective
+Date : JJ/MM/YYYY
+Durée : XXh
+Participants : Liste
+Absent(s) : Liste
+
+1. OBJECTIF DE LA RÉUNION
+   [Description]
+
+2. POINTS ABORDÉS
+   2.1. [Point 1]
+   2.2. [Point 2]
+
+3. DÉCISIONS PRISES
+   - [Décision 1]
+   - [Décision 2]
+
+4. ACTIONS À RÉALISER
+   | Action | Responsable | Délai |
+   |--------|-------------|-------|
+   | ...    | ...         | ...   |
+
+5. PROCHAINE RÉUNION
+   Date : JJ/MM/YYYY
+   Objectif : [Description]
+
+Rédacteur : [Rôle] - À compléter
+\end{verbatim}
+
+\chapter{Annexe B : Glossaire complet}
+
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\rowcolor{lightblue}
+\textbf{Terme} & \textbf{Définition} \\
+\hline
+\endfirsthead
+
+\hline
+\rowcolor{lightblue}
+\textbf{Terme} & \textbf{Définition} \\
+\hline
+\endhead
+
+Agile & Méthodologie itérative et incrémentale de gestion de projet \\
+\hline
+Backlog & Liste priorisée de tâches/User Stories à réaliser \\
+\hline
+Burndown Chart & Graphique montrant le travail restant dans un sprint \\
+\hline
+CI/CD & Intégration Continue / Déploiement Continu \\
+\hline
+Code Review & Revue de code par des pairs avant intégration \\
+\hline
+Definition of Done & Critères pour considérer une User Story terminée \\
+\hline
+Git Flow & Stratégie de gestion des branches Git \\
+\hline
+Merge Request & Demande d'intégration de code (GitLab) \\
+\hline
+Microgrid & Réseau électrique local autonome \\
+\hline
+Sprint & Itération de durée fixe (2 semaines ici) \\
+\hline
+User Story & Exigence format utilisateur (En tant que... Je veux...) \\
+\hline
+Vélocité & Nombre Story Points complétés par sprint \\
+\hline
+\end{longtable}
+
+\end{document}
+

@@ -1,12 +1,15 @@
 ﻿import 'package:flutter/material.dart';
 
 import 'package:hospital_microgrid/theme/medical_solar_colors.dart';
+import 'package:hospital_microgrid/widgets/help_tooltip.dart';
+
 class MetricCard extends StatefulWidget {
  final IconData icon;
  final String label;
  final String value;
  final String change;
  final List<Color> gradientColors;
+ final String? tooltip;
 
  const MetricCard({
  super.key,
@@ -15,6 +18,7 @@ class MetricCard extends StatefulWidget {
  required this.value,
  required this.change,
  required this.gradientColors,
+ this.tooltip,
  });
 
  @override
@@ -123,7 +127,10 @@ class _MetricCardState extends State<MetricCard>
  child: Column(
  crossAxisAlignment: CrossAxisAlignment.start,
  children: [
- Text(
+ Row(
+ children: [
+ Expanded(
+ child: Text(
  widget.label,
  style: TextStyle(
  color: Theme.of(context).brightness == Brightness.dark
@@ -133,6 +140,22 @@ class _MetricCardState extends State<MetricCard>
  fontWeight: FontWeight.w500,
  letterSpacing: 0.2,
  ),
+ overflow: TextOverflow.ellipsis,
+ maxLines: 1,
+ ),
+ ),
+ if (widget.tooltip != null) ...[
+ const SizedBox(width: 6),
+ HelpTooltip(
+ message: widget.tooltip!,
+ title: widget.label,
+ iconSize: 14,
+ iconColor: Theme.of(context).brightness == Brightness.dark
+ ? Colors.white60
+ : Colors.grey[600],
+ ),
+ ],
+ ],
  ),
  const SizedBox(height: 6),
  Text(

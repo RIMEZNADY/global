@@ -1,0 +1,136 @@
+@startuml SMART_MICROGRID_BPMN
+
+title Processus Métier - SMART MICROGRID
+
+start
+
+:Connexion/Inscription;
+
+if (Utilisateur authentifié ?) then (non)
+  :S'inscrire;
+  :Se connecter;
+else (oui)
+endif
+
+:Accéder au profil;
+
+if (Action ?) then (Créer établissement)
+  
+  if (Type établissement ?) then (EXISTANT)
+    
+    :FormA1: Identifier établissement;
+    note right
+      - Type établissement
+      - Nom
+      - Nombre de lits
+      - Localisation GPS
+    end note
+    
+    :FormA2: Saisir données techniques;
+    note right
+      - Surface installable
+      - Consommation mensuelle
+      - PV existant (si applicable)
+    end note
+    
+    :FormA3: Prévisualiser analyse;
+    
+    :FormA4: Prévisualiser recommandations;
+    
+  else (NEW)
+    
+    :FormB1: Sélectionner localisation GPS;
+    note right
+      - Coordonnées GPS
+      - Classe irradiation (auto)
+    end note
+    
+    :FormB2: Saisir informations projet;
+    note right
+      - Budget
+      - Surface disponible
+      - Population servie
+    end note
+    
+    :FormB3: Définir objectif et priorité;
+    
+    :FormB4: Voir score recommandation;
+    
+  endif
+  
+  :FormA5/B5: Sélectionner équipements;
+  note right
+    - Panneaux PV
+    - Batteries
+    - Onduleurs
+    - Régulateurs
+  end note
+  
+  :Créer établissement (Backend);
+  
+  :Calculer résultats complets;
+  note right
+    - Dimensionnement optimal
+    - Analyse financière
+    - Impact environnemental
+    - Performance technique
+  end note
+  
+  :Charger prédictions IA (optionnel);
+  note right
+    - Prévisions consommation
+    - Recommandations ML
+    - Détection anomalies
+  end note
+  
+  :Afficher résultats (7 onglets);
+  
+elseif (Consulter établissement) then
+  
+  :Lister établissements;
+  
+  :Sélectionner établissement;
+  
+  :Afficher résultats complets;
+  
+  if (Action supplémentaire ?) then (Prédictions IA)
+    :Charger prédictions IA;
+  elseif (Scénarios What-If) then
+    :Simuler scénario;
+    note right
+      - Modifier puissance PV
+      - Modifier capacité batterie
+      - Modifier consommation
+      - Changer priorité
+    end note
+    :Afficher nouveaux résultats;
+  elseif (Exporter) then
+    :Générer PDF;
+    :Partager résultats;
+  endif
+  
+elseif (Modifier établissement) then
+  
+  :Sélectionner établissement;
+  
+  :Modifier données;
+  
+  :Recalculer résultats;
+  
+  :Afficher résultats mis à jour;
+  
+elseif (Supprimer établissement) then
+  
+  :Sélectionner établissement;
+  
+  :Confirmer suppression;
+  
+  :Supprimer établissement;
+  
+endif
+
+stop
+
+@enduml
+
+
