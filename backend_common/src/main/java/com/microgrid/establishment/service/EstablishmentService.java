@@ -33,8 +33,19 @@ public class EstablishmentService {
         // Validations métier
         validateEstablishmentRequest(request);
         
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userEmail));
+        // Créer ou récupérer l'utilisateur (guest par défaut si pas d'authentification)
+        User user = userRepository.findByEmail(userEmail).orElseGet(() -> {
+            // Créer un utilisateur guest si il n'existe pas
+            User guestUser = new User();
+            guestUser.setEmail(userEmail);
+            guestUser.setFirstName("Guest");
+            guestUser.setLastName("User");
+            guestUser.setRole(User.Role.USER);
+            guestUser.setActive(true);
+            // Pas de mot de passe pour les utilisateurs guest
+            guestUser.setPassword("$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy"); // Mot de passe hashé par défaut
+            return userRepository.save(guestUser);
+        });
         
         Establishment establishment = new Establishment();
         establishment.setUser(user);

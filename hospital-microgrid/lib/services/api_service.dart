@@ -13,13 +13,19 @@ class ApiService {
     if (kIsWeb) {
       // Web: localhost fonctionne
       url = 'http://localhost:8080/api';
+    } else if (Platform.isIOS) {
+      // iOS Simulator: localhost fonctionne directement
+      url = 'http://localhost:8080/api';
+    } else if (Platform.isAndroid) {
+      // Android Emulator: utiliser 10.0.2.2 pour accéder au host
+      url = 'http://10.0.2.2:8080/api';
     } else {
-      // Mobile (Android/iOS): utiliser l'IP configure dans ApiConfig
+      // Autres plateformes: utiliser la config par défaut
       url = ApiConfig.backendUrl;
     }
     
     // Debug: afficher l'URL utilisée
-    print('🔗 ApiService.baseUrl = $url (isWeb: $kIsWeb, isAndroid: ${!kIsWeb && Platform.isAndroid})');
+    print('🔗 ApiService.baseUrl = $url (isWeb: $kIsWeb, isAndroid: ${!kIsWeb && Platform.isAndroid}, isIOS: ${!kIsWeb && Platform.isIOS})');
     
     return url;
   }

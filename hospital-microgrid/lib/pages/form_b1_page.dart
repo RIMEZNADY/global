@@ -27,6 +27,16 @@ class _FormB1PageState extends State<FormB1Page> {
     super.initState();
     // Verifier la permission au demarrage et demander si necessaire
     _checkAndRequestLocation();
+    
+    // Initialiser la carte sur Casablanca après que le widget soit construit
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _mapController.move(
+          const LatLng(33.5731, -7.5898), // Casablanca
+          12.0,
+        );
+      }
+    });
   }
 
   Future<void> _checkAndRequestLocation() async {
@@ -82,11 +92,14 @@ class _FormB1PageState extends State<FormB1Page> {
       });
 
       // Centrer la carte sur la nouvelle position avec animation
-      await Future.delayed(const Duration(milliseconds: 50));
-      _mapController.move(
-        LatLng(latitude, longitude),
-        _mapController.camera.zoom,
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _mapController.move(
+            LatLng(latitude, longitude),
+            _mapController.camera.zoom,
+          );
+        }
+      });
     } catch (e) {
       setState(() {
         _errorMessage = 'Erreur lors de la mise a jour: ${e.toString()}';
@@ -102,6 +115,17 @@ class _FormB1PageState extends State<FormB1Page> {
     });
 
     try {
+      // Vérifier si la permission est refusée définitivement
+      final isPermanentlyDenied = await LocationService.isPermissionPermanentlyDenied();
+      if (isPermanentlyDenied) {
+        setState(() {
+          _errorMessage = 'Permission refusée définitivement. Veuillez l\'activer dans les paramètres.';
+          _isLoading = false;
+        });
+        _showOpenSettingsDialog();
+        return;
+      }
+      
       // Request permission
       final hasPermission = await LocationService.requestLocationPermission();
       
@@ -131,6 +155,58 @@ class _FormB1PageState extends State<FormB1Page> {
           _errorMessage = 'Impossible d\'obtenir votre localisation';
           _isLoading = false;
         });
+        // Centrer sur Casablanca si pas de position
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _mapController.move(
+              const LatLng(33.5731, -7.5898), // Casablanca
+              12.0,
+            );
+          }
+        });
+        return;
+      }
+
+      // Vérifier que la position est raisonnable (pas San Francisco par défaut du simulateur)
+      // Si la position est en dehors du Maroc (latitude < 20 ou > 36, longitude < -17 ou > -1)
+      // Utiliser Casablanca par défaut
+      if (position.latitude < 20 || position.latitude > 36 || 
+          position.longitude < -17 || position.longitude > -1) {
+        print('⚠️ Position GPS invalide (hors Maroc): ${position.latitude}, ${position.longitude}');
+        print('   Utilisation de Casablanca par défaut');
+        // Utiliser Casablanca comme position par défaut
+        final casablancaPosition = Position(
+          latitude: 33.5731,
+          longitude: -7.5898,
+          timestamp: DateTime.now(),
+          accuracy: 0,
+          altitude: 0,
+          altitudeAccuracy: 0,
+          heading: 0,
+          headingAccuracy: 0,
+          speed: 0,
+          speedAccuracy: 0,
+        );
+        
+        final zone = await SolarZoneService.getSolarZoneFromLocation(
+          33.5731,
+          -7.5898,
+        );
+        
+        setState(() {
+          _currentPosition = casablancaPosition;
+          _solarZone = zone;
+          _isLoading = false;
+        });
+        
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _mapController.move(
+              const LatLng(33.5731, -7.5898),
+              12.0,
+            );
+          }
+        });
         return;
       }
 
@@ -146,17 +222,47 @@ class _FormB1PageState extends State<FormB1Page> {
         _isLoading = false;
       });
 
-      // Center map on position
-      _mapController.move(
-        LatLng(position.latitude, position.longitude),
-        12.0,
-      );
+      // Center map on position (après que le widget soit rendu)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _currentPosition != null) {
+          _mapController.move(
+            LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+            12.0,
+          );
+        }
+      });
     } catch (e) {
       setState(() {
         _errorMessage = 'Erreur: ${e.toString()}';
         _isLoading = false;
       });
     }
+  }
+
+  void _showOpenSettingsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Permission refusée'),
+        content: const Text(
+          'La permission de localisation a été refusée définitivement. '
+          'Voulez-vous ouvrir les paramètres pour l\'activer ?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              LocationService.openAppSettings();
+            },
+            child: const Text('Ouvrir les paramètres'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _handleNext() {

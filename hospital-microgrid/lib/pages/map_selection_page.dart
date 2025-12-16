@@ -35,6 +35,16 @@ class _MapSelectionPageState extends State<MapSelectionPage> {
     } else {
       _checkAndRequestLocation();
     }
+    
+    // Initialiser la carte sur Casablanca par défaut après que le widget soit construit
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _mapController.move(
+          const LatLng(33.5731, -7.5898), // Casablanca
+          12.0,
+        );
+      }
+    });
   }
 
   @override
@@ -61,6 +71,18 @@ class _MapSelectionPageState extends State<MapSelectionPage> {
     });
 
     try {
+      // Vérifier si la permission est refusée définitivement
+      final isPermanentlyDenied = await LocationService.isPermissionPermanentlyDenied();
+      if (isPermanentlyDenied) {
+        setState(() {
+          _errorMessage = 'Permission refusée définitivement. Veuillez l\'activer dans les paramètres.';
+          _isLoading = false;
+        });
+        // Proposer d'ouvrir les paramètres
+        _showOpenSettingsDialog();
+        return;
+      }
+      
       final hasPermission = await LocationService.requestLocationPermission();
       if (!hasPermission) {
         setState(() {
@@ -85,6 +107,58 @@ class _MapSelectionPageState extends State<MapSelectionPage> {
           _errorMessage = 'Impossible d\'obtenir votre localisation.';
           _isLoading = false;
         });
+        // Centrer sur Casablanca si pas de position
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _mapController.move(
+              const LatLng(33.5731, -7.5898), // Casablanca
+              12.0,
+            );
+          }
+        });
+        return;
+      }
+
+      // Vérifier que la position est raisonnable (pas San Francisco par défaut du simulateur)
+      // Si la position est en dehors du Maroc (latitude < 20 ou > 36, longitude < -17 ou > -1)
+      // Utiliser Casablanca par défaut
+      if (position.latitude < 20 || position.latitude > 36 || 
+          position.longitude < -17 || position.longitude > -1) {
+        print('⚠️ Position GPS invalide (hors Maroc): ${position.latitude}, ${position.longitude}');
+        print('   Utilisation de Casablanca par défaut');
+        // Utiliser Casablanca comme position par défaut
+        final casablancaPosition = Position(
+          latitude: 33.5731,
+          longitude: -7.5898,
+          timestamp: DateTime.now(),
+          accuracy: 0,
+          altitude: 0,
+          altitudeAccuracy: 0,
+          heading: 0,
+          headingAccuracy: 0,
+          speed: 0,
+          speedAccuracy: 0,
+        );
+        
+        final zone = await SolarZoneService.getSolarZoneFromLocation(
+          33.5731,
+          -7.5898,
+        );
+        
+        setState(() {
+          _currentPosition = casablancaPosition;
+          _solarZone = zone;
+          _isLoading = false;
+        });
+        
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _mapController.move(
+              const LatLng(33.5731, -7.5898),
+              12.0,
+            );
+          }
+        });
         return;
       }
 
@@ -99,10 +173,15 @@ class _MapSelectionPageState extends State<MapSelectionPage> {
         _isLoading = false;
       });
 
-      _mapController.move(
-        LatLng(position.latitude, position.longitude),
-        12.0,
-      );
+      // Center map on position (après que le widget soit rendu)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _currentPosition != null) {
+          _mapController.move(
+            LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+            12.0,
+          );
+        }
+      });
     } catch (e) {
       setState(() {
         _errorMessage = 'Erreur lors de la mise a jour: ${e.toString()}';
@@ -125,6 +204,32 @@ class _MapSelectionPageState extends State<MapSelectionPage> {
     } catch (e) {
       print('Erreur lors du chargement de la zone solaire: $e');
     }
+  }
+  
+  void _showOpenSettingsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Permission refusée'),
+        content: const Text(
+          'La permission de localisation a été refusée définitivement. '
+          'Voulez-vous ouvrir les paramètres pour l\'activer ?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              LocationService.openAppSettings();
+            },
+            child: const Text('Ouvrir les paramètres'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _updateLocationFromMap(double latitude, double longitude) async {
@@ -159,10 +264,15 @@ class _MapSelectionPageState extends State<MapSelectionPage> {
         _isLoading = false;
       });
 
-      _mapController.move(
-        LatLng(latitude, longitude),
-        _mapController.camera.zoom,
-      );
+      // Centrer la carte sur la nouvelle position (après que le widget soit rendu)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _mapController.move(
+            LatLng(latitude, longitude),
+            _mapController.camera.zoom,
+          );
+        }
+      });
     } catch (e) {
       setState(() {
         _errorMessage = 'Erreur lors de la mise a jour: ${e.toString()}';
@@ -250,8 +360,8 @@ class _MapSelectionPageState extends State<MapSelectionPage> {
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 color: isDark
-                                    ? Colors.white70
-                                    : MedicalSolarColors.softGrey.withOpacity(0.7),
+                                    ? Colors.white
+                                    : MedicalSolarColors.softGrey,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -261,8 +371,8 @@ class _MapSelectionPageState extends State<MapSelectionPage> {
                                   Icons.gps_fixed,
                                   size: 14,
                                   color: isDark
-                                      ? Colors.white60
-                                      : MedicalSolarColors.softGrey.withOpacity(0.6),
+                                      ? Colors.white
+                                      : MedicalSolarColors.softGrey,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
@@ -270,8 +380,8 @@ class _MapSelectionPageState extends State<MapSelectionPage> {
                                   style: GoogleFonts.inter(
                                     fontSize: 11,
                                     color: isDark
-                                        ? Colors.white60
-                                        : MedicalSolarColors.softGrey.withOpacity(0.6),
+                                        ? Colors.white
+                                        : MedicalSolarColors.softGrey,
                                   ),
                                 ),
                               ],
@@ -513,8 +623,8 @@ class _MapSelectionPageState extends State<MapSelectionPage> {
                         Icons.gps_fixed,
                         size: 16,
                         color: isDark
-                            ? Colors.white70
-                            : MedicalSolarColors.softGrey.withOpacity(0.7),
+                            ? Colors.white
+                            : MedicalSolarColors.softGrey,
                       ),
                       const SizedBox(width: 8),
                       Flexible(
@@ -527,7 +637,7 @@ class _MapSelectionPageState extends State<MapSelectionPage> {
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: isDark
-                                    ? Colors.white70
+                                    ? Colors.white
                                     : MedicalSolarColors.softGrey,
                               ),
                             ),
@@ -537,8 +647,8 @@ class _MapSelectionPageState extends State<MapSelectionPage> {
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 color: isDark
-                                    ? Colors.white70
-                                    : MedicalSolarColors.softGrey.withOpacity(0.7),
+                                    ? Colors.white
+                                    : MedicalSolarColors.softGrey,
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -547,8 +657,8 @@ class _MapSelectionPageState extends State<MapSelectionPage> {
                               style: GoogleFonts.inter(
                                 fontSize: 11,
                                 color: isDark
-                                    ? Colors.white60
-                                    : MedicalSolarColors.softGrey.withOpacity(0.6),
+                                    ? Colors.white
+                                    : MedicalSolarColors.softGrey,
                                 fontStyle: FontStyle.italic,
                               ),
                             ),

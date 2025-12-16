@@ -5,13 +5,14 @@ class EstablishmentService {
   // Créer un établissement
   static Future<EstablishmentResponse> createEstablishment(EstablishmentRequest request) async {
     try {
-      // Essayer d'abord avec authentification
-      var response = await ApiService.post('/establishments', request.toJson(), includeAuth: true);
+      // L'endpoint /establishments est public (permitAll), essayer d'abord sans authentification
+      // Si ça échoue, essayer avec authentification
+      var response = await ApiService.post('/establishments', request.toJson(), includeAuth: false);
       
-      // Si 403 ou 401, essayer sans authentification (pour les tests ou endpoints publics)
+      // Si 403 ou 401, essayer avec authentification (au cas où l'utilisateur est connecté)
       if (response.statusCode == 403 || response.statusCode == 401) {
-        print('⚠️ Erreur ${response.statusCode}, tentative sans authentification...');
-        response = await ApiService.post('/establishments', request.toJson(), includeAuth: false);
+        print('⚠️ Erreur ${response.statusCode}, tentative avec authentification...');
+        response = await ApiService.post('/establishments', request.toJson(), includeAuth: true);
       }
       
       if (response.statusCode == 201 || response.statusCode == 200) {
@@ -19,6 +20,7 @@ class EstablishmentService {
         return EstablishmentResponse.fromJson(data);
       } else {
         final errorBody = response.body;
+        print('❌ Erreur ${response.statusCode}: $errorBody');
         try {
           final error = jsonDecode(errorBody);
           throw EstablishmentException(error['message'] ?? 'Erreur lors de la création');
@@ -64,13 +66,13 @@ class EstablishmentService {
   // Récupérer un établissement par ID
   static Future<EstablishmentResponse> getEstablishment(int id) async {
     try {
-      // Essayer d'abord avec authentification
-      var response = await ApiService.get('/establishments/$id', includeAuth: true);
+      // L'endpoint est public, essayer d'abord sans authentification
+      var response = await ApiService.get('/establishments/$id', includeAuth: false);
       
-      // Si 403 ou 401, essayer sans authentification (pour les tests ou endpoints publics)
+      // Si 403 ou 401, essayer avec authentification (au cas où l'utilisateur est connecté)
       if (response.statusCode == 403 || response.statusCode == 401) {
-        print('⚠️ Erreur ${response.statusCode}, tentative sans authentification...');
-        response = await ApiService.get('/establishments/$id', includeAuth: false);
+        print('⚠️ Erreur ${response.statusCode}, tentative avec authentification...');
+        response = await ApiService.get('/establishments/$id', includeAuth: true);
       }
       
       if (response.statusCode == 200) {
@@ -125,7 +127,14 @@ class EstablishmentService {
   // Récupérer les recommandations de dimensionnement
   static Future<RecommendationsResponse> getRecommendations(int id) async {
     try {
-      final response = await ApiService.get('/establishments/$id/recommendations');
+      // L'endpoint est public, essayer d'abord sans authentification
+      var response = await ApiService.get('/establishments/$id/recommendations', includeAuth: false);
+      
+      // Si 403 ou 401, essayer avec authentification
+      if (response.statusCode == 403 || response.statusCode == 401) {
+        print('⚠️ Erreur ${response.statusCode}, tentative avec authentification...');
+        response = await ApiService.get('/establishments/$id/recommendations', includeAuth: true);
+      }
       
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -144,7 +153,14 @@ class EstablishmentService {
   // Récupérer les économies et indicateurs économiques
   static Future<SavingsResponse> getSavings(int id, {double electricityPriceDhPerKwh = 1.2}) async {
     try {
-      final response = await ApiService.get('/establishments/$id/savings?electricityPriceDhPerKwh=$electricityPriceDhPerKwh');
+      // L'endpoint est public, essayer d'abord sans authentification
+      var response = await ApiService.get('/establishments/$id/savings?electricityPriceDhPerKwh=$electricityPriceDhPerKwh', includeAuth: false);
+      
+      // Si 403 ou 401, essayer avec authentification
+      if (response.statusCode == 403 || response.statusCode == 401) {
+        print('⚠️ Erreur ${response.statusCode}, tentative avec authentification...');
+        response = await ApiService.get('/establishments/$id/savings?electricityPriceDhPerKwh=$electricityPriceDhPerKwh', includeAuth: true);
+      }
       
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

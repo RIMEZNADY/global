@@ -99,12 +99,17 @@ class _FormB4PageState extends State<FormB4Page> {
   }
 
   void _showDetails() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? MedicalSolarColors.softGrey : Colors.white,
         title: Text(
           'Détails de la Recommandation',
-          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -112,22 +117,40 @@ class _FormB4PageState extends State<FormB4Page> {
           children: [
             Text(
               'Score de Recommandation: ${recommendation['score'].toStringAsFixed(1)}/100',
-              style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 12),
-            Text('Type: ${recommendation['recommendedType']}'),
+            Text(
+              'Type: ${recommendation['recommendedType']}',
+              style: GoogleFonts.inter(color: Colors.white),
+            ),
             const SizedBox(height: 8),
-            Text('Surface solaire: ${widget.solarSurface.toStringAsFixed(0)} m²'),
+            Text(
+              'Surface solaire: ${widget.solarSurface.toStringAsFixed(0)} m²',
+              style: GoogleFonts.inter(color: Colors.white),
+            ),
             const SizedBox(height: 8),
-            Text('Budget: ${widget.globalBudget.toStringAsFixed(0)} DH'),
+            Text(
+              'Budget: ${widget.globalBudget.toStringAsFixed(0)} DH',
+              style: GoogleFonts.inter(color: Colors.white),
+            ),
             const SizedBox(height: 8),
-            Text('Population: ${widget.population.toString()} habitants'),
+            Text(
+              'Population: ${widget.population.toString()} habitants',
+              style: GoogleFonts.inter(color: Colors.white),
+            ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Fermer'),
+            child: const Text(
+              'Fermer',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),

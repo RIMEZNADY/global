@@ -11,9 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.HashMap;
 
 @RestController
@@ -57,9 +57,16 @@ public class EstablishmentController {
     @PostMapping
     public ResponseEntity<?> createEstablishment(
             @Valid @RequestBody EstablishmentRequest request,
-            Authentication authentication) {
+            @Nullable Authentication authentication) {
         try {
-            String email = authentication.getName();
+            // Gérer le cas où l'authentification est null (endpoint public)
+            String email;
+            if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() != null) {
+                email = authentication.getName();
+            } else {
+                // Utiliser un utilisateur par défaut pour les requêtes publiques
+                email = "guest@microgrid.local";
+            }
             EstablishmentResponse response = establishmentService.createEstablishment(email, request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (com.microgrid.exception.ValidationException e) {
@@ -87,8 +94,14 @@ public class EstablishmentController {
     @GetMapping("/{id}")
     public ResponseEntity<EstablishmentResponse> getEstablishment(
             @PathVariable Long id,
-            Authentication authentication) {
+            @Nullable Authentication authentication) {
         try {
+            // Si pas d'authentification, récupérer directement par ID
+            if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() == null) {
+                Establishment establishment = establishmentService.getEstablishmentEntityById(id);
+                return ResponseEntity.ok(EstablishmentResponse.fromEntity(establishment));
+            }
+            
             String email = authentication.getName();
             EstablishmentResponse response = establishmentService.getEstablishment(id, email);
             return ResponseEntity.ok(response);
@@ -248,10 +261,16 @@ public class EstablishmentController {
     @GetMapping("/{id}/recommendations")
     public ResponseEntity<RecommendationsResponse> getRecommendations(
             @PathVariable Long id,
-            Authentication authentication) {
+            @Nullable Authentication authentication) {
         try {
-            String email = authentication.getName();
-            Establishment establishment = establishmentService.getEstablishmentEntity(id, email);
+            // Si pas d'authentification, récupérer directement par ID
+            Establishment establishment;
+            if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() == null) {
+                establishment = establishmentService.getEstablishmentEntityById(id);
+            } else {
+                String email = authentication.getName();
+                establishment = establishmentService.getEstablishmentEntity(id, email);
+            }
             
             // Consommation mensuelle
             double monthlyConsumption = establishment.getMonthlyConsumptionKwh() != null
@@ -356,10 +375,16 @@ public class EstablishmentController {
     public ResponseEntity<SavingsResponse> calculateSavings(
             @PathVariable Long id,
             @RequestParam(defaultValue = "1.2") double electricityPriceDhPerKwh,
-            Authentication authentication) {
+            @Nullable Authentication authentication) {
         try {
-            String email = authentication.getName();
-            Establishment establishment = establishmentService.getEstablishmentEntity(id, email);
+            // Si pas d'authentification, récupérer directement par ID
+            Establishment establishment;
+            if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() == null) {
+                establishment = establishmentService.getEstablishmentEntityById(id);
+            } else {
+                String email = authentication.getName();
+                establishment = establishmentService.getEstablishmentEntity(id, email);
+            }
             
             double monthlyConsumption = establishment.getMonthlyConsumptionKwh() != null
                 ? establishment.getMonthlyConsumptionKwh()
@@ -598,7 +623,7 @@ public class EstablishmentController {
     @GetMapping("/{id}/comprehensive-results")
     public ResponseEntity<Map<String, Object>> getComprehensiveResults(
             @PathVariable Long id,
-            @org.springframework.lang.Nullable Authentication authentication) {
+            @Nullable Authentication authentication) {
         try {
             // IMPORTANT: On récupère TOUJOURS l'établissement par son ID exact
             // La seule différence est la vérification de propriété (avec auth) ou non (sans auth)
