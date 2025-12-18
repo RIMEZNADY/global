@@ -138,6 +138,8 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.05);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden; // Empêche le contenu de déborder
+  position: relative; // Pour le positionnement correct
   
   &:hover {
     transform: translateY(-4px);
@@ -152,15 +154,20 @@
     margin-bottom: 20px;
     padding-bottom: 16px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    gap: 12px;
+    min-width: 0; // Permet au flex de fonctionner correctement
     
     .establishment-info {
       flex: 1;
+      min-width: 0; // Permet au texte de se tronquer si nécessaire
       
       h3 {
         font-size: 20px;
         font-weight: 600;
         color: var(--soft-grey);
         margin-bottom: 4px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
       
       .establishment-type {
@@ -178,13 +185,15 @@
     .card-actions {
       display: flex;
       gap: 8px;
+      flex-shrink: 0; // Empêche les boutons de rétrécir
+      align-items: flex-start;
       
       .btn-edit,
       .btn-delete {
         display: flex;
         align-items: center;
         gap: 6px;
-        padding: 8px 14px;
+        padding: 8px 12px;
         border-radius: 8px;
         font-size: 13px;
         font-weight: 500;
@@ -192,10 +201,13 @@
         transition: all 0.3s ease;
         border: none;
         white-space: nowrap;
+        flex-shrink: 0; // Empêche les boutons de rétrécir
         
         svg {
           flex-shrink: 0;
           stroke: currentColor;
+          width: 16px;
+          height: 16px;
         }
         
         span {
@@ -325,6 +337,16 @@
   
   .establishments-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .card-header {
+    flex-wrap: wrap; // Permet aux boutons de passer à la ligne sur mobile si nécessaire
+    
+    .card-actions {
+      width: 100%;
+      margin-top: 12px;
+      justify-content: flex-end;
+    }
   }
   
   .card-footer {

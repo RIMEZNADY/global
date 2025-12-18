@@ -1,8 +1,13 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { EstablishmentService } from '../../services/establishment.service';
 import { LocationService, IrradiationResponse } from '../../services/location.service';
+import { TooltipComponent } from '../../components/tooltip/tooltip.component';
+import { NavigationComponent } from '../../components/navigation/navigation.component';
 import * as L from 'leaflet';
 import { icon, Icon } from 'leaflet';
 
@@ -49,6 +54,8 @@ function createCustomIcon(zoneClass: string): L.DivIcon {
 
 @Component({
   selector: 'app-create-establishment',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, TooltipComponent, NavigationComponent, LeafletModule],
   template: `
     <div class="create-establishment-container">
       <app-navigation></app-navigation>
@@ -63,31 +70,26 @@ function createCustomIcon(zoneClass: string): L.DivIcon {
             <h3>Informations de base</h3>
             
             <div class="form-group">
-              <label>Nom de l'établissement *</label>
-              <input type="text" formControlName="name" placeholder="Ex: Hôpital Ibn Sina" />
+              <label class="form-label">
+                Nom de l'établissement *
+                <app-tooltip text="Le nom officiel de votre établissement de santé. Ce nom sera utilisé dans tous les rapports et analyses."></app-tooltip>
+              </label>
+              <input type="text" formControlName="name" placeholder="Ex: Hôpital Ibn Sina" class="form-input" />
               <span class="error" *ngIf="establishmentForm.get('name')?.hasError('required') && establishmentForm.get('name')?.touched">
                 Le nom est requis
               </span>
             </div>
             
             <div class="form-group">
-              <label>Type d'établissement *</label>
-              <select formControlName="type">
+              <label class="form-label">
+                Type d'établissement *
+                <app-tooltip text="Sélectionnez le type d'établissement de santé qui correspond le mieux à votre structure. Cela influence les calculs et recommandations."></app-tooltip>
+              </label>
+              <select formControlName="type" class="form-input">
                 <option value="">Sélectionnez un type</option>
-                <option value="CHU">CHU (Centre Hospitalo-Universitaire)</option>
-                <option value="HOPITAL_REGIONAL">Hôpital Régional</option>
-                <option value="HOPITAL_PREFECTORAL">Hôpital Préfectoral</option>
-                <option value="HOPITAL_PROVINCIAL">Hôpital Provincial</option>
-                <option value="CENTRE_REGIONAL_ONCOLOGIE">Centre Régional d'Oncologie</option>
-                <option value="CENTRE_HEMODIALYSE">Centre d'Hémodialyse</option>
-                <option value="CENTRE_REEDUCATION">Centre de Rééducation</option>
-                <option value="CENTRE_ADDICTOLOGIE">Centre d'Addictologie</option>
-                <option value="CENTRE_SOINS_PALLIATIFS">Centre de Soins Palliatifs</option>
-                <option value="UMH">UMH (Urgences médico-hospitalières)</option>
-                <option value="UMP">UMP (Urgences médicales de proximité)</option>
-                <option value="UPH">UPH (Urgences pré-hospitalières)</option>
-                <option value="CENTRE_SANTE_PRIMAIRE">Centre de Santé Primaire</option>
-                <option value="CLINIQUE_PRIVEE">Clinique Privée</option>
+                <optgroup *ngFor="let group of establishmentTypeGroups" [label]="group.label">
+                  <option *ngFor="let opt of group.options" [value]="opt.value">{{ opt.label }}</option>
+                </optgroup>
               </select>
               <span class="error" *ngIf="establishmentForm.get('type')?.hasError('required') && establishmentForm.get('type')?.touched">
                 Le type est requis
@@ -95,7 +97,10 @@ function createCustomIcon(zoneClass: string): L.DivIcon {
             </div>
             
             <div class="form-group">
-              <label>Nombre de lits *</label>
+              <label class="form-label">
+                Nombre de lits *
+                <app-tooltip text="Le nombre total de lits disponibles dans votre établissement. Cette information est utilisée pour estimer la consommation énergétique."></app-tooltip>
+              </label>
               <input 
                 type="number" 
                 formControlName="numberOfBeds" 
@@ -104,7 +109,7 @@ function createCustomIcon(zoneClass: string): L.DivIcon {
                 step="1"
                 inputmode="numeric"
                 pattern="[0-9]*"
-                class="number-input" />
+                class="form-input number-input" />
               <span class="error" *ngIf="establishmentForm.get('numberOfBeds')?.hasError('required') && establishmentForm.get('numberOfBeds')?.touched">
                 Le nombre de lits est requis
               </span>
@@ -125,7 +130,7 @@ function createCustomIcon(zoneClass: string): L.DivIcon {
               <div leaflet 
                    [leafletOptions]="mapOptions"
                    [leafletLayers]="mapLayers"
-                   (leafletMapReady)="onMapReady($event)"
+                   (leafletMapReady)="onMapReady($any($event))"
                    class="map">
               </div>
             </div>
@@ -133,7 +138,7 @@ function createCustomIcon(zoneClass: string): L.DivIcon {
             <div *ngIf="selectedLocation || (isEditMode && irradiationData)" class="location-info">
               <div class="info-card" [class]="'zone-' + (irradiationData?.irradiationClass || '').toLowerCase()">
                 <div class="info-header">
-                  <span class="info-icon">📍</span>
+                  <span class="info-icon"></span>
                   <div>
                     <strong>Position sélectionnée</strong>
                     <p *ngIf="irradiationData?.nearestCity">
@@ -174,7 +179,7 @@ function createCustomIcon(zoneClass: string): L.DivIcon {
             <div class="zone-display" *ngIf="irradiationData">
               <div class="zone-info-card" [class]="'zone-' + irradiationData.irradiationClass.toLowerCase()">
                 <div class="zone-header">
-                  <span class="zone-icon">☀️</span>
+                  <span class="zone-icon"></span>
                   <div>
                     <strong>Zone d'irradiation déterminée</strong>
                     <p>{{ locationService.getZoneLabel(irradiationData.irradiationClass) }}</p>
@@ -189,7 +194,7 @@ function createCustomIcon(zoneClass: string): L.DivIcon {
             <div class="zone-display" *ngIf="!irradiationData && isEditMode && establishmentForm.get('irradiationClass')?.value">
               <div class="zone-info-card" [class]="'zone-' + establishmentForm.get('irradiationClass')?.value?.toLowerCase()">
                 <div class="zone-header">
-                  <span class="zone-icon">☀️</span>
+                  <span class="zone-icon"></span>
                   <div>
                     <strong>Zone d'irradiation</strong>
                     <p>{{ locationService.getZoneLabel(establishmentForm.get('irradiationClass')?.value) }}</p>
@@ -202,14 +207,20 @@ function createCustomIcon(zoneClass: string): L.DivIcon {
             </div>
             
             <div class="form-group">
-              <label>Surface installable (m²)</label>
-              <input type="number" formControlName="installableSurfaceM2" placeholder="Ex: 5000" min="0" step="0.01" />
+              <label class="form-label">
+                Surface installable (m²)
+                <app-tooltip text="La surface totale disponible sur les toits ou au sol pour l'installation de panneaux photovoltaïques. Environ 5 m² sont nécessaires par kWc."></app-tooltip>
+              </label>
+              <input type="number" formControlName="installableSurfaceM2" placeholder="Ex: 5000" min="0" step="0.01" class="form-input" />
               <span class="help-text">Surface disponible pour l'installation de panneaux solaires</span>
             </div>
             
             <div class="form-group">
-              <label>Consommation mensuelle (kWh)</label>
-              <input type="number" formControlName="monthlyConsumptionKwh" placeholder="Ex: 50000" min="0" step="0.01" />
+              <label class="form-label">
+                Consommation mensuelle (kWh)
+                <app-tooltip text="La consommation électrique mensuelle moyenne de votre établissement. Si non renseignée, elle sera estimée automatiquement en fonction du nombre de lits et du type d'établissement."></app-tooltip>
+              </label>
+              <input type="number" formControlName="monthlyConsumptionKwh" placeholder="Ex: 50000" min="0" step="0.01" class="form-input" />
               <span class="help-text">Si non renseigné, sera estimée automatiquement</span>
             </div>
           </div>
@@ -249,6 +260,47 @@ export class CreateEstablishmentComponent implements OnInit, AfterViewInit {
   zoneCircle: L.Circle | null = null;
   isEditMode = false;
   establishmentId: number | null = null;
+
+  establishmentTypeGroups: Array<{
+    label: string;
+    options: Array<{ value: string; label: string }>;
+  }> = [
+    {
+      label: 'Hôpitaux',
+      options: [
+        { value: 'CHU', label: 'CHU (Centre Hospitalo-Universitaire)' },
+        { value: 'HOPITAL_REGIONAL', label: 'Hôpital Régional' },
+        { value: 'HOPITAL_PREFECTORAL', label: 'Hôpital Préfectoral' },
+        { value: 'HOPITAL_PROVINCIAL', label: 'Hôpital Provincial' }
+      ]
+    },
+    {
+      label: 'Centres spécialisés',
+      options: [
+        { value: 'CENTRE_REGIONAL_ONCOLOGIE', label: "Centre Régional d'Oncologie" },
+        { value: 'CENTRE_HEMODIALYSE', label: "Centre d'Hémodialyse" },
+        { value: 'CENTRE_REEDUCATION', label: 'Centre de Rééducation' },
+        { value: 'CENTRE_ADDICTOLOGIE', label: "Centre d'Addictologie" },
+        { value: 'CENTRE_SOINS_PALLIATIFS', label: 'Centre de Soins Palliatifs' }
+      ]
+    },
+    {
+      label: 'Urgences',
+      options: [
+        { value: 'UMH', label: 'UMH (Urgences médico-hospitalières)' },
+        { value: 'UMP', label: 'UMP (Urgences médicales de proximité)' },
+        { value: 'UPH', label: 'UPH (Urgences pré-hospitalières)' }
+      ]
+    },
+    {
+      label: 'Soins de proximité',
+      options: [{ value: 'CENTRE_SANTE_PRIMAIRE', label: 'Centre de Santé Primaire' }]
+    },
+    {
+      label: 'Privé',
+      options: [{ value: 'CLINIQUE_PRIVEE', label: 'Clinique Privée' }]
+    }
+  ];
 
   // Options de la carte - centrée sur le Maroc
   mapOptions: L.MapOptions = {
@@ -650,8 +702,9 @@ export class CreateEstablishmentComponent implements OnInit, AfterViewInit {
         // Mode création
         this.establishmentService.createEstablishment(establishmentData).subscribe({
           next: (establishment) => {
-            this.router.navigate(['/dashboard'], { 
-              queryParams: { created: 'true' } 
+            // Workflow normal : après création, aller vers les résultats complets
+            this.router.navigate(['/mobile/results/comprehensive'], { 
+              queryParams: { establishmentId: establishment.id } 
             });
           },
           error: (error) => {

@@ -33,7 +33,7 @@ import { forkJoin } from 'rxjs';
         
         <div *ngIf="!isLoading && metrics" class="metrics-grid">
           <app-metric-card
-            icon="⚡"
+            icon=""
             [label]="'Current Load'"
             [value]="formatValue(metrics.currentLoad, 'kW')"
             [change]="formatChange(metrics.currentLoadChange)"
@@ -41,7 +41,7 @@ import { forkJoin } from 'rxjs';
           </app-metric-card>
           
           <app-metric-card
-            icon="📈"
+            icon=""
             [label]="'Solar Generation'"
             [value]="formatValue(metrics.solarGeneration, 'kW')"
             [change]="formatChange(metrics.solarGenerationChange)"
@@ -49,7 +49,7 @@ import { forkJoin } from 'rxjs';
           </app-metric-card>
           
           <app-metric-card
-            icon="📊"
+            icon=""
             [label]="'System Efficiency'"
             [value]="formatValue(metrics.systemEfficiency, '%')"
             [change]="formatChange(metrics.efficiencyChange)"
@@ -57,7 +57,7 @@ import { forkJoin } from 'rxjs';
           </app-metric-card>
           
           <app-metric-card
-            icon="🔋"
+            icon=""
             [label]="'Battery Status'"
             [value]="formatValue(metrics.batteryStatus, '%')"
             [change]="formatChange(metrics.batteryStatusChange)"
@@ -249,7 +249,7 @@ export class DashboardComponent implements OnInit {
   }
 
   createEstablishment(): void {
-    this.router.navigate(['/create-establishment']);
+    this.router.navigate(['/institution-choice']);
   }
 
   loadDashboardData(): void {

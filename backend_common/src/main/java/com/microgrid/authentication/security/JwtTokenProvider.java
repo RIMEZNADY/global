@@ -66,7 +66,20 @@ public class JwtTokenProvider {
                     .build()
                     .parseSignedClaims(token);
             return true;
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (ExpiredJwtException e) {
+            System.err.println("❌ JWT Token expired: " + e.getMessage());
+            return false;
+        } catch (UnsupportedJwtException e) {
+            System.err.println("❌ JWT Token unsupported: " + e.getMessage());
+            return false;
+        } catch (MalformedJwtException e) {
+            System.err.println("❌ JWT Token malformed: " + e.getMessage());
+            return false;
+        } catch (IllegalArgumentException e) {
+            System.err.println("❌ JWT Token is empty or null: " + e.getMessage());
+            return false;
+        } catch (JwtException e) {
+            System.err.println("❌ JWT Token validation failed: " + e.getClass().getSimpleName() + " - " + e.getMessage());
             return false;
         }
     }

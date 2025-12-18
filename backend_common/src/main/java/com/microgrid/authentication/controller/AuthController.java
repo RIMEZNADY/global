@@ -3,6 +3,7 @@ package com.microgrid.authentication.controller;
 import com.microgrid.authentication.dto.AuthResponse;
 import com.microgrid.authentication.dto.LoginRequest;
 import com.microgrid.authentication.dto.RegisterRequest;
+import com.microgrid.authentication.dto.UpdateUserRequest;
 import com.microgrid.authentication.dto.UserResponse;
 import com.microgrid.authentication.service.AuthService;
 import com.microgrid.authentication.service.UserService;
@@ -52,11 +53,44 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getCurrentUser(Authentication authentication) {
         try {
+            if (authentication == null || authentication.getName() == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
             String email = authentication.getName();
             UserResponse response = userService.getCurrentUser(email);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+    
+    @PutMapping("/me")
+    public ResponseEntity<UserResponse> updateCurrentUser(
+            @Valid @RequestBody UpdateUserRequest request,
+            Authentication authentication) {
+        try {
+            if (authentication == null || authentication.getName() == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            String email = authentication.getName();
+            UserResponse response = userService.updateUser(email, request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+    
+    @DeleteMapping("/me")
+    public ResponseEntity<?> deleteCurrentUser(Authentication authentication) {
+        try {
+            if (authentication == null || authentication.getName() == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            String email = authentication.getName();
+            userService.deleteUser(email);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 }

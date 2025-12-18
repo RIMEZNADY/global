@@ -36,7 +36,7 @@ import { AiService, MLMetricsResponse } from '../../services/ai.service';
           <div class="metrics-cards">
             <div class="metric-card-large">
               <div class="metric-header">
-                <span class="metric-icon">📊</span>
+                <span class="metric-icon"></span>
                 <span class="metric-help">?</span>
               </div>
               <div class="metric-value">{{ metrics.test.mae.toFixed(2) }} kWh</div>
@@ -46,7 +46,7 @@ import { AiService, MLMetricsResponse } from '../../services/ai.service';
             
             <div class="metric-card-large">
               <div class="metric-header">
-                <span class="metric-icon">📈</span>
+                <span class="metric-icon"></span>
                 <span class="metric-help">?</span>
               </div>
               <div class="metric-value">{{ metrics.test.rmse.toFixed(2) }} kWh</div>

@@ -51,6 +51,60 @@ public class UserService {
             establishmentSummaries
         );
     }
+    
+    @Transactional
+    public UserResponse updateUser(String email, com.microgrid.authentication.dto.UpdateUserRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+        
+        if (request.getFirstName() != null) {
+            user.setFirstName(request.getFirstName());
+        }
+        if (request.getLastName() != null) {
+            user.setLastName(request.getLastName());
+        }
+        if (request.getPhone() != null) {
+            user.setPhone(request.getPhone());
+        }
+        
+        user = userRepository.save(user);
+        
+        List<Establishment> establishments = establishmentRepository.findByUserId(user.getId());
+        List<UserResponse.EstablishmentSummary> establishmentSummaries = establishments.stream()
+                .map(est -> new UserResponse.EstablishmentSummary(
+                    est.getId(),
+                    est.getName(),
+                    est.getType().name(),
+                    est.getStatus().name(),
+                    est.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
+        
+        return new UserResponse(
+            user.getId(),
+            user.getEmail(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getPhone(),
+            user.getRole().name(),
+            user.getActive(),
+            user.getCreatedAt(),
+            establishmentSummaries
+        );
+    }
+    
+    @Transactional
+    public void deleteUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+        
+        // Delete all establishments first
+        List<Establishment> establishments = establishmentRepository.findByUserId(user.getId());
+        establishmentRepository.deleteAll(establishments);
+        
+        // Then delete the user
+        userRepository.delete(user);
+    }
 }
 
 

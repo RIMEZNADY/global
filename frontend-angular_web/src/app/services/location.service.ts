@@ -36,5 +36,23 @@ export class LocationService {
     };
     return labels[irradiationClass] || irradiationClass;
   }
+
+  // Used by NEW workflow in mobile app: estimate population around a location.
+  // Endpoint implemented in backend_common location module (if present).
+  estimatePopulation(params: {
+    latitude: number;
+    longitude: number;
+    establishmentType?: string;
+    numberOfBeds?: number;
+  }): Observable<number> {
+    const { latitude, longitude, establishmentType, numberOfBeds } = params;
+    const typeParam = establishmentType ? `&establishmentType=${encodeURIComponent(establishmentType)}` : '';
+    const bedsParam = numberOfBeds != null ? `&numberOfBeds=${numberOfBeds}` : '';
+    return this.http
+      .get<{ estimatedPopulation: number }>(
+        `${this.baseUrl}/location/estimate-population?latitude=${latitude}&longitude=${longitude}${typeParam}${bedsParam}`
+      )
+      .pipe(map(res => res.estimatedPopulation));
+  }
 }
 

@@ -224,6 +224,6 @@ export class AiPredictionComponent implements OnInit {
   }
 
   createEstablishment(): void {
-    this.router.navigate(['/create-establishment']);
+    this.router.navigate(['/institution-choice']);
   }
 }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -44,6 +44,13 @@ import { AuthService } from '../../services/auth.service';
           <p>Pas encore de compte ? <a (click)="register()" style="cursor: pointer; color: var(--medical-blue); text-decoration: none; font-weight: 600;">S'inscrire</a></p>
         </div>
       </div>
+      
+      <button class="discover-btn" (click)="goToHome()">
+        <span>Découvrir</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
     </div>
   `,
   styleUrls: ['./login.component.scss']
@@ -56,7 +63,8 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -71,7 +79,13 @@ export class LoginComponent {
       
       this.authService.login(this.loginForm.value).subscribe({
         next: () => {
-          this.router.navigate(['/dashboard']);
+          // Attendre un peu pour s'assurer que le token est bien stocké
+          setTimeout(() => {
+            const next = this.route.snapshot.queryParamMap.get('next');
+            // Si un paramètre 'next' est fourni (ex: depuis mobile ou page protégée), l'utiliser
+            // Sinon, rediriger vers la page d'accueil (home)
+            this.router.navigate([next || '/home']);
+          }, 100);
         },
         error: (error) => {
           if (error.status === 0 || error.status === 504) {
@@ -90,6 +104,16 @@ export class LoginComponent {
   }
 
   register(): void {
-    this.router.navigate(['/register']);
+    const next = this.route.snapshot.queryParamMap.get('next');
+    this.router.navigate(['/register'], next ? { queryParams: { next } } : undefined);
+  }
+
+  goToHome(): void {
+    // Quand on clique sur "découvrir" depuis la page de login,
+    // on veut explorer sans être connecté, donc on nettoie le token
+    // pour s'assurer que l'utilisateur voit la page non authentifiée
+    this.authService.clearToken();
+    // Naviguer vers la page home
+    this.router.navigate(['/home']);
   }
 }

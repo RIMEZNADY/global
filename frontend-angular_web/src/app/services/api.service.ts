@@ -26,7 +26,12 @@ export class ApiService {
     if (includeAuth) {
       const token = this.getToken();
       if (token) {
-        headers = headers.set('Authorization', `Bearer ${token}`);
+        // Nettoyer le token (enlever les espaces, retours à la ligne, etc.)
+        const cleanToken = token.trim().replace(/\s+/g, '');
+        console.log('Setting Authorization header with token:', cleanToken.substring(0, 30) + '...');
+        headers = headers.set('Authorization', `Bearer ${cleanToken}`);
+      } else {
+        console.warn('No token available for Authorization header');
       }
     }
 

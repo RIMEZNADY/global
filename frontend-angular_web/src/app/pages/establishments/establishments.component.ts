@@ -31,7 +31,7 @@ import { EstablishmentService, Establishment } from '../../services/establishmen
         </div>
         
         <div *ngIf="!isLoading && establishments.length === 0" class="empty-state">
-          <div class="empty-icon">🏥</div>
+          <div class="empty-icon"></div>
           <h3>Aucun établissement</h3>
           <p>Créez votre premier établissement pour commencer</p>
           <button class="btn-primary" (click)="createNew()">
@@ -126,20 +126,29 @@ export class EstablishmentsComponent implements OnInit {
     
     this.establishmentService.getUserEstablishments().subscribe({
       next: (establishments) => {
+        console.log('Establishments loaded:', establishments);
+        console.log('Number of establishments:', establishments.length);
         this.establishments = establishments;
         this.isLoading = false;
+        // Si la liste est vide, ne pas afficher d'erreur - l'utilisateur peut créer un établissement
+        if (establishments.length === 0) {
+          console.warn('No establishments found. This could mean: 1) No establishments created yet, 2) Token expired/invalid, 3) User not authenticated');
+        }
       },
       error: (error) => {
         console.error('Error loading establishments:', error);
-        if (error.status === 401) {
-          this.errorMessage = 'Session expirée. Veuillez vous reconnecter.';
-          setTimeout(() => {
-            this.router.navigate(['/login']);
-          }, 2000);
-        } else if (error.status === 0) {
+        console.error('Error details:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          error: error.error
+        });
+        // Ne pas rediriger vers login - permettre à l'utilisateur de créer un établissement
+        if (error.status === 0) {
           this.errorMessage = 'Impossible de contacter le serveur. Vérifiez que le backend est démarré.';
         } else {
-          this.errorMessage = 'Erreur lors du chargement des établissements.';
+          // Pour les autres erreurs, ne pas afficher de message - laisser l'utilisateur créer un établissement
+          this.establishments = [];
         }
         this.isLoading = false;
       }
@@ -147,7 +156,7 @@ export class EstablishmentsComponent implements OnInit {
   }
 
   createNew(): void {
-    this.router.navigate(['/create-establishment']);
+    this.router.navigate(['/institution-choice']);
   }
 
   editEstablishment(id: number): void {
@@ -185,13 +194,19 @@ export class EstablishmentsComponent implements OnInit {
   }
 
   viewDetails(id: number): void {
-    this.router.navigate(['/establishment', id]);
+    // Workflow normal : voir les détails = voir les résultats complets
+    this.router.navigate(['/mobile/results/comprehensive'], { queryParams: { establishmentId: id } });
   }
 
   selectEstablishment(id: number): void {
     // Stocker l'ID de l'établissement sélectionné
     localStorage.setItem('selectedEstablishmentId', id.toString());
-    this.router.navigate(['/dashboard']);
+    // Rediriger directement vers la page des résultats complets de l'établissement
+    this.router.navigate(['/mobile/results/comprehensive'], { 
+      queryParams: { 
+        establishmentId: id
+      } 
+    });
   }
 
   getTypeLabel(type: string): string {

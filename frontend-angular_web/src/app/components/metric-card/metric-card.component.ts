@@ -17,7 +17,7 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./metric-card.component.scss']
 })
 export class MetricCardComponent {
-  @Input() icon = '📊';
+  @Input() icon = '';
   @Input() label = '';
   @Input() value = '';
   @Input() change = '';

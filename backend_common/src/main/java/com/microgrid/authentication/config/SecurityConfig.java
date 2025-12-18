@@ -59,7 +59,11 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
+                // Endpoints publics d'authentification (login, register)
+                .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                // Endpoint /api/auth/me nécessite une authentification
+                .requestMatchers("/api/auth/me", "/api/auth/me/**").authenticated()
+                // Autres endpoints publics
                 .requestMatchers("/api/location/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
                 // Ouverture des endpoints d'établissement pour les tests automatiques (Cas 1/Cas 2)

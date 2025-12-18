@@ -10,8 +10,8 @@ import { Router } from '@angular/router';
           <div class="solar-panel">
             <div class="panel-grid"></div>
             <div class="panel-icon">
-              <span class="medical-icon">⚕</span>
-              <span class="solar-icon">☀</span>
+              <span class="medical-icon"></span>
+              <span class="solar-icon"></span>
             </div>
           </div>
         </div>

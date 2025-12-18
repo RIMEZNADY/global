@@ -8,7 +8,7 @@
     "features": 22,
     "model": "XGBRegressor",
     "test_rows": 291,
-    "timestamp": "2025-12-12T19:31:02.665212",
+    "timestamp": "2025-12-18T01:00:01.461684",
     "train_rows": 1164
   },
   "test": {

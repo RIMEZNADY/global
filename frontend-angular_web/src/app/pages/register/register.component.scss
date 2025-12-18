@@ -1,6 +1,7 @@
 .register-container {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, var(--off-white), var(--medical-blue), var(--solar-green));
@@ -117,5 +118,78 @@
     &:hover {
       text-decoration: underline;
     }
+  }
+}
+
+.discover-btn {
+  margin-top: 24px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, var(--medical-blue), var(--solar-green));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(78, 168, 222, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(78, 168, 222, 0.5);
+    
+    &::before {
+      width: 300px;
+      height: 300px;
+    }
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  svg {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+  }
+  
+  &:hover svg {
+    transform: translateX(4px);
+  }
+  
+  span {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
   }
 }

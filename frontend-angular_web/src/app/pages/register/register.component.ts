@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -86,7 +86,8 @@ export class RegisterComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.registerForm = this.fb.group({
       firstName: ['', [Validators.required]],
@@ -117,7 +118,14 @@ export class RegisterComponent {
       
       this.authService.register(registerData).subscribe({
         next: () => {
-          this.router.navigate(['/dashboard']);
+          // Attendre un peu pour s'assurer que le token est bien stocké
+          setTimeout(() => {
+            const next = this.route.snapshot.queryParamMap.get('next');
+            // Après inscription, rediriger vers le choix d'institution (workflow normal)
+            // Si un paramètre 'next' est fourni (ex: depuis mobile), l'utiliser
+            // Sinon, rediriger vers institution-choice
+            this.router.navigate([next || '/institution-choice']);
+          }, 100);
         },
         error: (error) => {
           if (error.status === 0 || error.status === 504) {
@@ -136,6 +144,11 @@ export class RegisterComponent {
   }
 
   goToLogin(): void {
-    this.router.navigate(['/login']);
+    const next = this.route.snapshot.queryParamMap.get('next');
+    this.router.navigate(['/login'], next ? { queryParams: { next } } : undefined);
+  }
+
+  goToHome(): void {
+    this.router.navigate(['/home']);
   }
 }
