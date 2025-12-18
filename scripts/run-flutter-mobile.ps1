@@ -6,7 +6,7 @@ Write-Host ""
 
 # Aller dans le répertoire du projet Flutter
 $flutterPath = Join-Path $PSScriptRoot "..\hospital-microgrid"
-Set-Location $flutterPath
+Set-Location $flutterPathimage.png
 
 # Vérifier les appareils disponibles
 Write-Host "Vérification des appareils disponibles..." -ForegroundColor Yellow
@@ -43,4 +43,7 @@ Write-Host "Cela peut prendre quelques minutes la première fois." -ForegroundCo
 Write-Host ""
 
 flutter run -d emulator-5554
+
+
+
 

@@ -95,3 +95,6 @@ Détecter si les patterns changent et nécessitent un réentraînement.
 
 
 
+
+
+

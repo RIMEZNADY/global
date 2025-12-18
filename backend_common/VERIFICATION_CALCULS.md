@@ -136,3 +136,6 @@ Vérifier dans le code backend comment ces valeurs sont réellement calculées, 
 
 
 
+
+
+

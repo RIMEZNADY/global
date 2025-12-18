@@ -544,7 +544,7 @@ DTL (Tests) & v1.0 & RQ & ⏳ Avant 23/12/2025 \\
 \hline
 Manuel Utilisateur & v1.0 & Frontend & ⏳ Sprint 5 \\
 \hline
-Rapport SonarQube & v1.0 & RT & ⏳ Avant 23/12/2025 \\
+Rapport SonarCloud & v1.0 & RT & ⏳ Avant 23/12/2025 \\
 \hline
 Rapport Tests (Selenium, JMeter) & v1.0 & RQ & ⏳ Avant 23/12/2025 \\
 \hline
@@ -794,9 +794,14 @@ Pour une équipe de 5 étudiants avec 3 technologies différentes (Java, Dart, P
 \begin{itemize}[leftmargin=*]
     \item Outils : JMeter, Apache Bench
     \item Charge : 20-30 utilisateurs simultanés (réaliste pour établissements médicaux)
-    \item Critère : Temps réponse < 1s (95e percentile)
+    \item Critères de performance (95e percentile) :
+    \begin{itemize}[leftmargin=*]
+        \item Endpoints simples (GET) : < 500ms
+        \item Endpoints avec calculs : < 1.5s
+        \item Endpoints complexes (simulations avec IA) : < 5s
+    \end{itemize}
     \item Responsable : RT
-    \item \textbf{Justification} : Pour un projet étudiant ciblant des établissements médicaux (probablement < 50 utilisateurs réels), 20-30 users simultanés est un objectif réaliste et suffisant.
+    \item \textbf{Justification} : Pour un projet étudiant ciblant des établissements médicaux (probablement < 50 utilisateurs réels), 20-30 users simultanés est un objectif réaliste et suffisant. La différenciation des critères par type d'endpoint reflète la complexité variable des opérations (consultation simple vs simulation complexe avec appels IA).
 \end{itemize}
 
 \textbf{Tests de sécurité}
@@ -844,13 +849,13 @@ Pour une équipe de 5 étudiants avec 3 technologies différentes (Java, Dart, P
 \rowcolor{lightblue}
 \textbf{Environnement} & \textbf{Description} \\
 \hline
-DEV (Local) & Postes développeurs, tests locaux \\
+DEV (Local) & Postes développeurs, tests locaux, Docker Compose (PostgreSQL) \\
 \hline
-INT (Integration) & Serveur intégration, Docker Compose, CI/CD \\
+INT (Integration) & CI/CD automatique (GitHub Actions), tests automatiques sur chaque commit \\
 \hline
-UAT (Pre-prod) & Environnement similaire production, tests acceptance \\
+UAT (Pre-prod) & Tests d'acceptance utilisateur (peut utiliser environnement DEV avec données de test) \\
 \hline
-PROD (Production) & Production finale (si déploiement réel demandé) \\
+PROD (Production) & Production finale (optionnel, si déploiement réel demandé) \\
 \hline
 \end{tabular}
 \caption{Environnements de test}
@@ -862,14 +867,14 @@ PROD (Production) & Production finale (si déploiement réel demandé) \\
 
 \textbf{Objectif :} Mettre en place un CI/CD minimal mais fonctionnel pour un projet étudiant.
 
-\textbf{Workflow automatique (GitLab CI / GitHub Actions) :}
+\textbf{Workflow automatique (GitHub Actions) :}
 
 \begin{enumerate}[leftmargin=*]
     \item \textbf{Commit} → Push code
     \item \textbf{Build} → Compilation automatique (Backend, Frontend, IA)
     \item \textbf{Tests unitaires} → Exécution suite tests
-    \item \textbf{Analyse code} → SonarQube (si disponible, sinon linters locaux)
-    \item \textbf{Notification} → Équipe (Slack/Email) en cas d'échec
+    \item \textbf{Analyse code} → SonarCloud (gratuit pour projets publics) ou linters locaux (Flutter lints, pylint, checkstyle)
+    \item \textbf{Notification} → Équipe (Email GitHub) en cas d'échec
 \end{enumerate}
 
 \textbf{Étapes optionnelles (si temps disponible) :}
@@ -880,27 +885,23 @@ PROD (Production) & Production finale (si déploiement réel demandé) \\
 
 \textbf{Configuration minimale :}
 \begin{verbatim}
-# .gitlab-ci.yml (exemple minimal)
-stages:
-  - build
-  - test
-
-build_backend:
-  stage: build
-  script:
-    - cd backend_common
-    - mvn clean package
-
-test_backend:
-  stage: test
-  script:
-    - cd backend_common
-    - mvn test
+# .github/workflows/ci.yml (exemple minimal)
+name: CI
+on: [push, pull_request]
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+      - run: cd backend_common && mvn test
 \end{verbatim}
 
 \textbf{Responsable :} RT
 
-\textbf{Date de mise en place :} Sprint 1-2
+\textbf{Date de mise en place :} Sprint 1-2 (ou dès que possible si projet déjà avancé)
 
 \subsection{Critères entrée/sortie}
 
@@ -919,7 +920,7 @@ test_backend:
     \item 100\% User Stories Must validées
     \item 0 bug critique ouvert
     \item < 5 bugs haute priorité ouverts
-    \item Performance validée (< 1s pour 20-30 users)
+    \item Performance validée selon critères section 6.2.4 (endpoints simples < 500ms, calculs < 1.5s, simulations < 5s, 95e percentile)
     \item Documentation utilisateur complète
 \end{itemize}
 
@@ -956,13 +957,13 @@ test_backend:
 \hline
 Couverture tests & \% code testé unitairement & ≥ 60-70\% (critiques), 40-50\% (autres) \\
 \hline
-Dette technique & Jours équivalents refactoring & < 5 jours \\
+Dette technique & Jours équivalents refactoring (estimation) & < 5 jours \\
 \hline
 Complexité cyclo. & Moyenne par fonction & < 10 \\
 \hline
 Duplication code & \% lignes dupliquées & < 3\% \\
 \hline
-Violations SonarQube & Nombre bugs/vulnérabilités & 0 bloquant \\
+Violations SonarCloud & Nombre bugs/vulnérabilités bloquants & 0 bloquant \\
 \hline
 \end{tabular}
 \caption{Métriques qualité code}
@@ -984,7 +985,7 @@ Violations SonarQube & Nombre bugs/vulnérabilités & 0 bloquant \\
     \item Alertes (dépassements seuils)
 \end{itemize}
 
-\textbf{Outils :} Excel, GitLab Insights, ou tableau manuel
+\textbf{Outils :} Excel, GitHub Insights, ou tableau manuel
 
 \textbf{Responsable :} RQ
 
@@ -1136,7 +1137,7 @@ R10 & Défaillance serveur INT & Tech. & Faible & Moy. & 🟢 & Backup local Doc
 
 \textbf{Revue d'architecture (fin Sprint 2)}
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Objectif} : Validation DAC v1.0
+    \item \textbf{Objectif} : Validation DAC v1.0 (Document d'Architecture Consolidé)
     \item \textbf{Participants} : RT + tous développeurs
     \item \textbf{Checklist} : Cohérence, scalabilité, sécurité, performance
     \item \textbf{Responsable} : RT
@@ -1145,7 +1146,8 @@ R10 & Défaillance serveur INT & Tech. & Faible & Moy. & 🟢 & Backup local Doc
 \textbf{Code Review (continu)}
 \begin{itemize}[leftmargin=*]
     \item \textbf{Objectif} : Qualité code, respect standards
-    \item \textbf{Process} : Merge Request → 2 approbations obligatoires
+    \item \textbf{Process} : Pull Request (PR) → 1 approbation minimum (idéalement 2)
+    \item \textbf{Exception} : En cas d'urgence ou indisponibilité, RT peut approuver seul
     \item \textbf{Checklist} : Standards, tests, documentation, sécurité
     \item \textbf{Responsables} : RT + peer reviewers
 \end{itemize}
@@ -1155,6 +1157,7 @@ R10 & Défaillance serveur INT & Tech. & Faible & Moy. & 🟢 & Backup local Doc
 \textbf{Audit de sprint (fin chaque sprint)}
 \begin{itemize}[leftmargin=*]
     \item \textbf{Objectif} : Vérification conformité DoD
+    \item \textbf{Durée} : 1-2 heures maximum
     \item \textbf{Activités} :
     \begin{itemize}
         \item Contrôle US "Done" (critères DoD complets ?)
@@ -1163,7 +1166,7 @@ R10 & Défaillance serveur INT & Tech. & Faible & Moy. & 🟢 & Backup local Doc
         \item Contrôle documentation
     \end{itemize}
     \item \textbf{Responsable} : RQ
-    \item \textbf{Livrable} : Rapport audit sprint
+    \item \textbf{Livrable} : Rapport audit sprint (template Markdown ou Excel)
 \end{itemize}
 
 % ========================================
@@ -1269,7 +1272,7 @@ Tests & PyTest \\
 
 \subsection{Qualité code}
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Analyse statique} : SonarQube / SonarCloud (si disponible)
+    \item \textbf{Analyse statique} : SonarCloud (gratuit pour projets publics) ou linters locaux
     \item \textbf{Linters} :
     \begin{itemize}
         \item Java : Checkstyle, PMD
