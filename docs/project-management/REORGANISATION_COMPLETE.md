@@ -121,3 +121,6 @@ Le dossier `frontend_flutter_mobile/` existe toujours mais semble être une dupl
 
 **RÉORGANISATION TERMINÉE AVEC SUCCÈS !**
 
+
+
+

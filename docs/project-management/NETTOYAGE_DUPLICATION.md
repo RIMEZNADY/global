@@ -61,3 +61,6 @@ Get-ChildItem -Recurse -Directory -Filter "hospital-microgrid" | Select-Object F
 
 Les scripts ont été mis à jour pour pointer vers `hospital-microgrid/` à la racine, donc tout fonctionnera correctement une fois la duplication supprimée.
 
+
+
+

@@ -76,3 +76,6 @@ Write-Host "Note: Si les valeurs proviennent de Nominatim, elles seront les popu
 Write-Host "Sinon, ce sont des estimations basées sur la zone solaire et le type d'établissement."
 
 
+
+
+
