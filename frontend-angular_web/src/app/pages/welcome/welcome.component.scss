@@ -1,0 +1,139 @@
+.welcome-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--off-white), var(--medical-blue), var(--solar-green));
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.welcome-content {
+  text-align: center;
+  animation: fadeInUp 1s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.logo-container {
+  margin-bottom: 40px;
+}
+
+.solar-panel {
+  width: 160px;
+  height: 160px;
+  margin: 0 auto;
+  position: relative;
+  background: linear-gradient(135deg, var(--medical-blue), var(--solar-green));
+  border-radius: 30px;
+  box-shadow: 0 15px 40px rgba(78, 168, 222, 0.4);
+  animation: scaleIn 0.8s ease;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.panel-grid {
+  position: absolute;
+  inset: 20px;
+  background-image: 
+    linear-gradient(to right, rgba(255,255,255,0.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.2) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.panel-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.medical-icon {
+  font-size: 48px;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.solar-icon {
+  font-size: 32px;
+  color: var(--solar-yellow);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.app-title {
+  font-size: 56px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+  font-family: 'Inter', sans-serif;
+}
+
+.app-subtitle {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: var(--soft-grey);
+  margin-bottom: 16px;
+  font-family: 'Inter', sans-serif;
+}
+
+.app-tagline {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--soft-grey);
+  opacity: 0.8;
+  padding: 8px 24px;
+  background: rgba(78, 168, 222, 0.1);
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 60px;
+  border: 1px solid rgba(78, 168, 222, 0.3);
+}
+
+.loading-bar {
+  width: 200px;
+  height: 2px;
+  background: rgba(78, 168, 222, 0.1);
+  border-radius: 1px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.loading-progress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--medical-blue), var(--solar-green));
+  animation: loading 2s ease infinite;
+}
+
+@keyframes loading {
+  0% { width: 0%; }
+  50% { width: 100%; }
+  100% { width: 0%; }
+}
